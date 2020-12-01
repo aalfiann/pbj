@@ -1,2 +1,8 @@
 node_modules
 tmp
+debug.pid
+debug.js.json
+release.pid
+release.js.json
+test.pid
+test.js.json
