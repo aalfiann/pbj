@@ -1,0 +1,24 @@
+<!-- Bulma is included -->
+<link rel="stylesheet" href="@{CONF.baseAssetsUrl}/assets/css/admin-one/main.min.css">
+<!-- Fonts -->
+<link rel="dns-prefetch" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet" type="text/css">
+<style>
+  .fix-footer {
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+    overflow:hidden;
+    z-index: 100;
+  }
+  @media only screen and (max-width: 600px) {
+    .fix-modal {
+      width: 90vw;
+    }
+  }
+  @media only screen and (min-width:601px) and (max-width:1200px) {
+    .fix-modal {
+      width: 70vw;
+    }
+  }
+</style>

@@ -8,3 +8,8 @@ mail_smtp_options               : {"secure":false,"port":25,"user":"","password"
 mail_address_from               : your@yourwebsite.com
 mail_address_reply              : your@yourwebsite.com
 mail_address_copy               :
+
+// VIEW CONFIG
+baseUrl                         : http://localhost:8000
+baseAssetsUrl                   : http://localhost:8000
+siteName                        : PBJ

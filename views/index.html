@@ -1,11 +1,53 @@
 @{title('Something awesome')}
 
-<hr />
-<br />
-<p class="center">
-	The Node.js framework for all web developers with everything what you need.<br />
-	<b>Create something awesome.</b>
-</p>
-<br />
-<br />
-<div class="center"><a href="http://docs.totaljs.com" class="linkbutton">DOCUMENTATION</a></div>
+@{section meta}
+	@{view('partial-meta')}
+@{end}
+@{section menu}
+	@{view('partial-menu-navbar')}
+	@{view('partial-menu-aside')}
+@{end}
+
+  <section class="section is-title-bar">
+    <div class="level">
+      <div class="level-left">
+        <div class="level-item">
+          <ul>
+            <li><a href="@{CONF.baseUrl}" class="has-text-dark">Home</a></li>
+            <li>Blank page</li>
+          </ul>
+        </div>
+      </div>
+      <div class="level-right">
+        <div class="level-item">
+          <div class="buttons is-right">
+            <a href="https://admin-one-html.justboil.me/" target="_blank" class="button is-primary">
+              <span class="icon"><i class="mdi mdi-credit-card-outline"></i></span>
+              <span>Premium Demo</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="hero is-hero-bar">
+    <div class="hero-body">
+      <div class="level">
+        <div class="level-left">
+          <div class="level-item"><h1 class="title">
+            Blank page
+          </h1></div>
+        </div>
+        <div class="level-right" style="display: none;">
+          <div class="level-item"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <section class="section is-main-section">
+    <!-- content here -->
+  </section>
+
+@{section js}
+	@{view('partial-js')}
+@{end}
