@@ -4,7 +4,13 @@
   "description": "PBJ Pemerintah",
   "main": "debug.js",
   "dependencies": {
-    "total.js": "^3.4.6"
+    "async": "^3.2.0",
+    "moment": "^2.29.1",
+    "puppeteer": "^5.5.0",
+    "puppeteer-core": "^5.5.0",
+    "sync-loop": "^0.1.1",
+    "total.js": "^3.4.6",
+    "uuidv4": "^6.2.5"
   },
   "devDependencies": {},
   "scripts": {

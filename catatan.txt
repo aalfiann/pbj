@@ -1,0 +1,29 @@
+npm i total.js
+npm i puppeteer
+npm i moment
+npm i async
+npm i uuid
+
+=====================
+API Buka List Tender:
+headers --> Content-Type: application/json, pbj-api-key: ngupas@2020
+url --> http://localhost:8000/tender/datatender
+param --> {"katakunci":"","sortby":1,"sortbyasc":0,"filterby":0,"filter":"","page":1,"limit":10}
+
+----- keterangan parameter
+katakunci: mengacu pada kode / nama paket / tendel_label / instansi / tahap / kategori / sistem_pengadaan / tahun_anggaran / nilai_kontrak
+
+sort_by_id: 
+1 = Kode
+2 = Nama Paket
+3 = Label
+4 = Instansi
+5 = Nilai Kontrak
+
+sortbyasc: 
+1 = Ascending, selain itu Descending
+
+filterby: dan filter: belum ada.
+
+page: dan limit: untuk pagination (jika diperlukan, dan sudah bisa dicoba)
+=====================

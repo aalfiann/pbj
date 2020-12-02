@@ -1,19 +1,19 @@
 {
-  "pid": 10602,
+  "pid": 30648,
   "stats": [
     {
       "id": null,
       "version": {
-        "node": "v10.22.0",
+        "node": "v15.3.0",
         "total": "3.4.6",
         "app": "1.0.0"
       },
-      "pid": 10602,
+      "pid": 30648,
       "thread": "",
       "mode": "debug",
       "overload": 0,
-      "date": "2020-12-01T11:40:59.247Z",
-      "memory": 12.28,
+      "date": "2020-12-02T20:42:33.520Z",
+      "memory": 9.66,
       "rm": 0,
       "fm": 0,
       "wm": 0,
@@ -23,13 +23,12 @@
       "dbrm": 0,
       "dbwm": 0,
       "usage": 0,
-      "requests": 11,
+      "requests": 1,
       "pending": 0,
-      "errors": 1,
+      "errors": 0,
       "timeouts": 0,
-      "uptime": 9,
-      "online": 0,
-      "lasterror": "2020-12-01T11:33:02.353Z Error: /home/aziz/Monetize/lpse/views/layout.html: Unexpected end of input\n    at view_parse (/home/aziz/Monetize/lpse/node_modules/total.js/internal.js:2044:9)\n    at viewengine_read (/home/aziz/Monetize/lpse/node_modules/total.js/internal.js:3020:10)\n    at Object.viewengine_load [as viewEngine] (/home/aziz/Monetize/lpse/node_modules/total.js/internal.js:3107:14)\n    at ControllerProto.view (/home/aziz/Monetize/lpse/node_modules/total.js/index.js:14982:55)\n    at ControllerProto.$viewrender (/home/aziz/Monetize/lpse/node_modules/total.js/index.js:15217:16)\n    at ControllerProto.view (/home/aziz/Monetize/lpse/node_modules/total.js/index.js:14982:14)\n    at Controller.view_index (/home/aziz/Monetize/lpse/controllers/default.js:9:7)\n    at IncomingMessage.PROTO.$total_execute2 (/home/aziz/Monetize/lpse/node_modules/total.js/index.js:17062:32)\n    at IncomingMessage.PROTO.$total_execute (/home/aziz/Monetize/lpse/node_modules/total.js/index.js:17028:9)\n    at IncomingMessage.PROTO.$total_prepare (/home/aziz/Monetize/lpse/node_modules/total.js/index.js:17362:9)"
+      "uptime": 6,
+      "online": 0
     }
   ]
 }
