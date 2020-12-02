@@ -12,8 +12,8 @@
       "thread": "",
       "mode": "debug",
       "overload": 0,
-      "date": "2020-12-02T20:42:33.520Z",
-      "memory": 9.66,
+      "date": "2020-12-02T20:44:33.522Z",
+      "memory": 9.35,
       "rm": 0,
       "fm": 0,
       "wm": 0,
@@ -27,7 +27,7 @@
       "pending": 0,
       "errors": 0,
       "timeouts": 0,
-      "uptime": 6,
+      "uptime": 8,
       "online": 0
     }
   ]
