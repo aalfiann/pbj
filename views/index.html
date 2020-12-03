@@ -13,51 +13,14 @@
     Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
   </p>
   <hr>
-  <select id="filter" class="smooth" style="margin-right:5px;">
+  <select id="filterby" class="smooth space-right">
+    <option>Semua</option>
+  </select>
+  <select id="filter" class="smooth space-right">
     <option>Semua</option>
   </select>
   <input id="search" type="text" style="width:50%;" class="smooth" placeholder="input & enter"><span class="addon"><i class="mdi mdi-magnify"></i></span>
-  <table class="table">
-    <thead>
-      <tr>
-        <th>#</th>
-        <th>Sold</th>
-        <th>Revenue</th>
-        <th>Profit</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td data-label="#">1</td>
-        <td data-label="Sold">5</td>
-        <td data-label="Revenue">10</td>
-        <td data-label="Profit">2</td>
-      </tr>
-      <tr>
-        <td data-label="#">10</td>
-        <td data-label="Sold">50</td>
-        <td data-label="Revenue">100</td>
-        <td data-label="Profit">20</td>
-      </tr>
-      <tr>
-        <td data-label="#">100</td>
-        <td data-label="Sold">500</td>
-        <td data-label="Revenue">1000</td>
-        <td data-label="Profit">200</td>
-      </tr>
-    </tbody>
-  </table>
-  <div class="row">
-    <span class="pull-right" style="margin-top:10px;">Halaman 1 dari 1000</span>
-    <span class="pull-left">
-      Page 
-      <select class="smooth" style="margin-left:5px;margin-right: 5px;">
-        <option>1</option>
-      </select>
-      <button class="btn btn-sm smooth" style="margin-right:5px;">Prev</button>
-      <button class="btn btn-sm smooth">Next</button>
-    </span>
-  </div>
+  <div id="app"></div>
 </div>
 
 @{section footer}
@@ -65,5 +28,139 @@
 @{end}
 
 @{section js}
-	@{view('partial-js')}
+  @{view('partial-js')}
+  <script>
+    var pageNow = 1;
+    var totalPage = 0;
+    var itemPerPage = 100;
+    var app = new Reef('#app', {
+      data: {
+        table: [],
+        pageNow: pageNow,
+        itemPerPage: itemPerPage,
+        totalPage: 0,
+        totalRecords: 0
+      },
+      template: function (props) {
+        if(props.table.length > 0) {
+          // generate option for jump page
+          var tpage = '';
+          for (var i=1;i<=props.totalPage;i++) {
+              // if current i same as pagenow then add attribute selected
+              tpage += '<option '+(i === pageNow ? 'selected':'')+'>'+i+'</option>';
+          }
+          return `<table class="table space-top">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Kode</th>
+                <th>Nama Paket</th>
+                <th>Instansi</th>
+                <th>Tahap</th>
+                <th>HPS</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${props.table.map(function(item, index) {
+                var num = (index+1);
+                return `<tr>
+                  <td data-label="#">${num+((props.pageNow-1)*itemPerPage)}</td>
+                  <td data-label="Kode">${item.kode}</td>
+                  <td data-label="Nama Paket">${item.nama_paket}</td>
+                  <td data-label="Instansi">${item.instansi}</td>
+                  <td data-label="Tahap">${item.tahap}</td>
+                  <td data-label="HPS">${item.hps}</td>
+                </tr>`;
+              }).join('')}
+            </tbody>
+          </table>
+          <div class="row">
+            <span class="pull-right" style="margin-top:10px;">Halaman ${props.pageNow} dari ${props.totalPage}</span>
+            <span class="pull-left">
+              Page 
+              <select id="jumpPage" onclick="jumpPage(this)" class="smooth space-left space-right">${tpage}</select>
+              <button onclick="prevPage()" class="btn btn-sm smooth space-right"><i class="mdi mdi-arrow-left-bold space-right"></i> Prev</button>
+              <button onclick="nextPage()" class="btn btn-sm smooth">Next <i class="mdi mdi-arrow-right-bold space-left"></i></button>
+            </span>
+          </div>`;
+        } else {
+          return '<div class="row"><message class="warning">Data tidak ditemukan!</message></div>';
+        }
+      }
+    });
+    app.render();
+
+    function searchData(value, pagenow, itemperpage) {
+      reset();
+      ajax({
+        headers: {
+          'pbj-api-key': 'ngupas@2020',
+          'content-type': 'application/json'
+        }
+      })
+      .post('@{CONF.baseUrl}/tender/datatender', {
+        katakunci:value,
+        sortby:1,
+        sortbyasc:0,
+        filterby:0,
+        filter:'',
+        page:pagenow,
+        limit:itemperpage
+      })
+      .then(function (response, xhr) {
+        var totalrec = parseInt(response.totalrecord);
+        var totalpage = Math.ceil(totalrec/itemperpage);
+        totalPage = totalpage;
+        app.data.table = response.data;
+        app.data.pageNow = pagenow;
+        app.data.totalPage = totalpage;
+        app.data.totalRecords= totalrec;
+      })
+      .catch(function(response, xhr) {
+        console.log(xhr.responseText);
+      });
+    }
+
+    function reset() {
+      // pageNow = 1;
+      // totalPage = 0;
+      app.data.table = [];
+      app.data.pageNow = pageNow;
+      app.data.totalPage = 0;
+      app.data.totalRecords= 0;
+    }
+
+    // Next Page
+    function nextPage() {
+      if(pageNow < totalPage) {
+        pageNow = pageNow + 1;
+        searchData(Dom.id('search').value,pageNow,itemPerPage);
+      }
+    }
+
+    // Previous Page
+    function prevPage() {
+      if(pageNow > 1) {
+        pageNow = pageNow - 1;
+        searchData(Dom.id('search').value,pageNow,itemPerPage);
+      }
+    }
+
+    // Go / Jump to page
+    function jumpPage(self) {
+      pageNow = parseInt(self.value);
+      searchData(Dom.id('search').value,pageNow,itemPerPage);
+    }
+
+    // Event listener when search box is entered
+    Dom.id('search').addEventListener('keyup', function(e) {
+      if (e.keyCode === 13) {
+        pageNow = 1;
+        searchData(this.value, pageNow, itemPerPage);
+      }
+    });
+
+    // load data
+    searchData(Dom.id('search').value,pageNow,itemPerPage);
+  </script>
 @{end}
