@@ -13,3 +13,6 @@ mail_address_copy               :
 baseUrl                         : http://localhost:8000
 baseAssetsUrl                   : http://localhost:8000
 siteName                        : PBJ
+
+// ROW TENDER
+row_ambil                       : 100
