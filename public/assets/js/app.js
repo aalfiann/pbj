@@ -1,203 +1,216 @@
 "use strict";
 
-function parseJWT (token) {
-    var base64Url = token.split('.')[1];
-    var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    var jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-    }).join(''));
-    return JSON.parse(jsonPayload);
-};
+var pageNow = 1;
+var totalPage = 0;
+var itemPerPage = 25;
+var filterBy = 0;
+var filter = '';
 
-function logout(baseUrl, _cb) {
-    localStorage.removeItem(baseUrl+'_tokenize');
-    if(_cb && typeof _cb === "function") {
-        _cb();
+// Reactive UI
+var app = new Reef('#app', {
+  data: {
+    table: [],
+    pageNow: pageNow,
+    itemPerPage: itemPerPage,
+    totalPage: 0,
+    totalRecords: 0,
+    message: ''
+  },
+  template: function (props) {
+    if(props.table.length > 0) {
+      // generate option for jump page
+      var tpage = '';
+      for (var i=1;i<=props.totalPage;i++) {
+        // if current i same as pagenow then add attribute selected
+        tpage += '<option '+(i === pageNow ? 'selected':'')+'>'+i+'</option>';
+      }
+      return `<table class="table space-top">
+        <thead>
+            <tr>
+            <th>#</th>
+            <th>Kode</th>
+            <th>Nama Paket</th>
+            <th>Instansi</th>
+            <th>Tahap</th>
+            <th>HPS</th>
+            </tr>
+        </thead>
+        <tbody>
+            ${props.table.map(function(item, index) {
+            var num = (index+1);
+            return `<tr>
+                <td data-label="#">${num+((props.pageNow-1)*itemPerPage)}</td>
+                <td data-label="Kode">${item.kode}</td>
+                <td data-label="Nama Paket">${item.nama_paket}</td>
+                <td data-label="Instansi">${item.instansi}</td>
+                <td data-label="Tahap">${item.tahap}</td>
+                <td data-label="HPS">${item.hps}</td>
+            </tr>`;
+            }).join('')}
+        </tbody>
+        </table>
+        <div class="row">
+        <span class="pull-right" style="margin-top:10px;">Halaman ${props.pageNow} dari ${props.totalPage}</span>
+        <span class="pull-left">
+            Page 
+            <select id="jumpPage" onchange="jumpPage(this)" class="smooth space-left space-right">${tpage}</select>
+            <button onclick="prevPage()" class="btn btn-sm smooth space-right"><i class="mdi mdi-arrow-left-bold space-right"></i> Prev</button>
+            <button onclick="nextPage()" class="btn btn-sm smooth">Next <i class="mdi mdi-arrow-right-bold space-left"></i></button>
+        </span>
+        </div>`;
     } else {
-        return location = baseUrl + '/login';
+      return '<div class="row"><message class="warning">'+props.message+'</message></div>';
     }
-}
+  }
+});
 
-function getToken(baseUrl, _cb) {
-    if(getWithExpiry(baseUrl+'_tokenize') === null) {
-        profile_nav.data.token = null;
-        profile_nav.data.baseUrl = '';
-        if(_cb && typeof _cb === "function") {
-            _cb(null);
-        } else {
-            return null;
-        }
+app.render();
+
+// Search Data
+function searchData(value, pagenow, itemperpage) {
+  refresh('Proses loading data...');
+  ajax({
+    headers: {
+        'pbj-api-key': 'ngupas@2020',
+        'content-type': 'application/json'
+    }
+  })
+  .post('@{CONF.baseUrl}/tender/datatender', {
+    katakunci:value,
+    sortby:1,
+    sortbyasc:0,
+    filterby:filterBy,
+    filter:filter,
+    page:pagenow,
+    limit:itemperpage
+  })
+  .then(function (response, xhr) {
+    if(response.sts_res === 'true' && response.data.length > 0) {
+      var totalrec = parseInt(response.totalrecord);
+      var totalpage = Math.ceil(totalrec/itemperpage);
+      totalPage = totalpage;
+      app.data.table = response.data;
+      app.data.pageNow = pagenow;
+      app.data.totalPage = totalpage;
+      app.data.totalRecords= totalrec;
     } else {
-        var token = getWithExpiry(baseUrl+'_tokenize');
-        if(token) {
-            profile_nav.data.token = token;
-            profile_nav.data.baseUrl = baseUrl;
-        }
-        if(_cb && typeof _cb === "function") {
-            _cb(token);
-        } else {
-            return token;
-        }
+      reset();
     }
+  })
+  .catch(function(response, xhr) {
+    console.log(xhr.responseText);
+    reset();
+  });
 }
 
-var profile_nav = new Reef('#profile_nav', {
-    data: {
-        token: null,
-        baseUrl: ''
-    },
-    template: function (props) {
-        if(props.token) {
-            var profile = parseJWT(props.token);
-            return `<div class="navbar-end">
-            <div class="navbar-item has-dropdown has-dropdown-with-icons has-divider has-user-avatar is-hoverable">
-            <a class="navbar-link is-arrowless">
-              <div class="is-user-avatar">
-                <img src="https://gravatar.com/avatar/${MD5(profile.mail)}" alt="${profile.unm}">
-              </div>
-              <div class="is-user-name"><span>${profile.unm}</span></div>
-              <span class="icon"><i class="mdi mdi-chevron-down"></i></span>
-            </a>
-            <div class="navbar-dropdown">
-              <a href="${props.baseUrl+'/user/'+profile.unm}" class="navbar-item">
-                <span class="icon"><i class="mdi mdi-account"></i></span>
-                <span>My Profile</span>
-              </a>
-              <a class="navbar-item">
-                <span class="icon"><i class="mdi mdi-cog"></i></span>
-                <span>Settings</span>
-              </a>
-              <hr class="navbar-divider">
-              <a class="navbar-item" onclick="logout('${props.baseUrl}')">
-                <span class="icon"><i class="mdi mdi-logout"></i></span>
-                <span>Log Out</span>
-              </a>
-            </div>
-          </div>
-            <a href="https://justboil.me/bulma-admin-template/one-html" title="About" class="navbar-item has-divider is-desktop-icon-only">
-                <span class="icon"><i class="mdi mdi-help-circle-outline"></i></span>
-                <span>About</span>
-            </a>
-          </div>`;
-        } else {
-            return `<div class="navbar-end">
-            <a href="${props.baseUrl+'/login'}" title="Login" class="navbar-item has-divider is-desktop-icon-only">
-                <span class="icon"><i class="mdi mdi-login"></i></span>
-                <span>Login</span>
-            </a>
-            <a href="https://justboil.me/bulma-admin-template/one-html" title="About" class="navbar-item has-divider is-desktop-icon-only">
-                <span class="icon"><i class="mdi mdi-help-circle-outline"></i></span>
-                <span>About</span>
-            </a>
-            </div>`;
-        }
-    }
-});
-profile_nav.render();
-
-var menu_aside = new Reef('#menu_aside', {
-    data: {
-        baseUrl: '',
-        menu: []
-    },
-    template: function (props) {
-        if(props.menu.length > 0) {
-            return `<p class="menu-label">Client Area</p>
-            <ul class="menu-list">
-                ${props.menu.map(function(menus){
-                    if(menus.type === 'link') {
-                        return `<li>
-                            <a href="${(menus.url.indexOf('://') !== -1 ? menus.url: props.baseUrl + menus.url)}" class="is-active router-link-active has-icon">
-                            <span class="icon"><i class="${menus.icon}"></i></span>
-                            <span class="menu-item-label">${menus.name}</span>
-                            </a>
-                        </li>`;
-                    } else {
-                        return `<li>
-                        <a class="has-icon has-dropdown-icon">
-                          <span class="icon"><i class="mdi mdi-view-list"></i></span>
-                          <span class="menu-item-label">${menus.name}</span>
-                          <div class="dropdown-icon">
-                            <span class="icon"><i class="mdi mdi-plus"></i></span>
-                          </div>
-                        </a>
-                        <ul>
-                          ${menus.child.map(function(child) {
-                            return `<li>
-                                <a href="${(child.url.indexOf('://') !== -1 ? child.url : props.baseUrl + child.url)}">
-                                <span class="ml-4"><i class="mdi mdi-arrow-right mr-2"></i>${child.name}</span>
-                                </a>
-                            </li>`;
-                          }).join('')}
-                        </ul>
-                      </li>`;
-                    }
-                    
-                }).join('')}
-            </ul>`;
-        } else {
-            return '';
-        }
-    }
-});
-menu_aside.render();
-
-document.addEventListener('render', function (event) {
-	// Only run for elements with the #menu_aside ID
-	if (!event.target.matches('#menu_aside')) return;
-	// Log the data at the time of render
-	if (event.detail.menu.length > 0); {
-        /* Aside: submenus toggle */
-        Array.from(document.getElementsByClassName('menu is-menu-main internal')).forEach(function (el) {
-            Array.from(el.getElementsByClassName('has-dropdown-icon')).forEach(function (elA) {
-                elA.addEventListener('click', function (e) {
-                    var dropdownIcon = e.currentTarget.getElementsByClassName('dropdown-icon')[0].getElementsByClassName('mdi')[0];
-                    e.currentTarget.parentNode.classList.toggle('is-active');
-                    dropdownIcon.classList.toggle('mdi-plus');
-                    dropdownIcon.classList.toggle('mdi-minus');
-                });
-            });
-        });
-    }
-}, false);
-
-function getMenu(baseUrl, token, _cb) {
-    if(token) {
-        ajax({
-            headers: {
-              'x-token': token
-            }
-        })
-        .get(baseUrl + '/api/menu/parent/list-by-role')
-        .then(function(response, xhr) {
-            menu_aside.data.baseUrl = baseUrl;
-            menu_aside.data.menu = response.data;
-            var validMenu = false;
-            for(var i=0; i < response.data.length; i++) {
-                if(response.data[i].type === 'link') {
-                    if(location.href == baseUrl+response.data[i].url) {
-                        validMenu = true;
-                        break;
-                    }
-                } else {
-                    for(var x=0; x< response.data[i].child.length; x++) {
-                        if(location.href == baseUrl+response.data[i].child[x].url) {
-                            validMenu = true;
-                            break;
-                        }
-                    }
-                }
-            }
-            if(_cb && typeof _cb === "function") {
-                _cb(null,validMenu);
-            }
-        })
-        .catch(function(response, xhr) {
-            if(_cb && typeof _cb === "function") {
-                _cb(xhr.responseText,false);
-            } else {
-                console.log(xhr.responseText);
-            }
-        })
-    }
+// Refresh Data
+function refresh(msg) {
+  app.data.table = [];
+  app.data.pageNow = pageNow;
+  app.data.totalPage = 0;
+  app.data.totalRecords= 0;
+  app.data.message = msg;
 }
+
+// Reset Data
+function reset() {
+  pageNow = 1;
+  totalPage = 0;
+  refresh('Data tidak ditemukan!');
+}
+
+// Next Page
+function nextPage() {
+  if(pageNow < totalPage) {
+    pageNow = pageNow + 1;
+    searchData(Dom.id('search').value,pageNow,itemPerPage);
+  }
+}
+
+// Previous Page
+function prevPage() {
+  if(pageNow > 1) {
+    pageNow = pageNow - 1;
+    searchData(Dom.id('search').value,pageNow,itemPerPage);
+  }
+}
+
+// Set Filter By
+function setFilterBy(self) {
+  filterBy = parseInt(self.value);
+  if(filterBy > 0) {
+    Dom.id('filter').style.display = 'inline';
+    _setDataFilter(filterBy);
+  } else {
+    _clearDataFilter();
+    Dom.id('filter').style.display = 'none';
+    filter = '';
+  }
+}
+
+// Set Filter
+function setFilter(self) {
+  filter = self.value;
+}
+
+function _clearDataFilter() {
+  var select = Dom.id("filter");
+  var length = select.options.length;
+  for (var i = 0; i < length; i++) {
+    select.options[i] = null;
+  }
+}
+
+function _setDataFilter(number) {
+  switch(true) {
+    case (number === 1) :
+        _getDataFilter('tahap');
+        break;
+  }
+}
+
+function _getDataFilter(name) {
+  _clearDataFilter();
+  var url = '@{CONF.baseUrl}/num/'+name;
+  ajax({
+    headers: {
+      'pbj-api-key':'ngupas@2020',
+      'content-type':'application/json'
+    }
+  })
+  .post(url, {})
+  .then(function(response, xhr) {
+    if(response.sts_res === 'true' && response.data.length > 0) {
+      var opt = '<option value="">Semua</option>"';
+      for (var x=0; x<response.data.length; x++) {
+        opt += '<option value="'+response.data[x].tahap+'">'+response.data[x].tahap+'</option>';
+      }
+      Dom.append(Dom.id('filter'),opt);
+    }
+  })
+  .catch(function(response, xhr){
+    console.log(xhr.responseText);
+  })
+}
+
+// Go / Jump to page
+function jumpPage(self) {
+  pageNow = parseInt(self.value);
+  searchData(Dom.id('search').value,pageNow,itemPerPage);
+}
+
+// Submit Search
+function submitSearch() {
+  pageNow = 1;
+  searchData(Dom.id('search').value, pageNow, itemPerPage);
+}
+
+// Event listener when search box is entered
+Dom.id('search').addEventListener('keyup', function(e) {
+  if (e.keyCode === 13) {
+    submitSearch();
+  }
+});
+
+// load data
+searchData(Dom.id('search').value,pageNow,itemPerPage);
