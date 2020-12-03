@@ -13,12 +13,11 @@
     Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
   </p>
   <hr>
-  <select id="filterby" class="smooth space-right">
-    <option>Semua</option>
+  <select id="filterby" onchange="setFilterBy(this)" class="smooth space-right">
+    <option value="0">Semua</option>
+    <option value="1">Tahap</option>
   </select>
-  <select id="filter" class="smooth space-right">
-    <option>Semua</option>
-  </select>
+  <select id="filter" onchange="setFilter(this)" class="smooth space-right" style="display: none;"></select>
   <input id="search" type="text" style="width:50%;" class="smooth" placeholder="input & enter"><span class="addon"><i class="mdi mdi-magnify"></i></span>
   <div id="app"></div>
 </div>
@@ -32,14 +31,17 @@
   <script>
     var pageNow = 1;
     var totalPage = 0;
-    var itemPerPage = 100;
+    var itemPerPage = 25;
+    var filterBy = 0;
+    var filter = '';
     var app = new Reef('#app', {
       data: {
         table: [],
         pageNow: pageNow,
         itemPerPage: itemPerPage,
         totalPage: 0,
-        totalRecords: 0
+        totalRecords: 0,
+        message: ''
       },
       template: function (props) {
         if(props.table.length > 0) {
@@ -78,20 +80,20 @@
             <span class="pull-right" style="margin-top:10px;">Halaman ${props.pageNow} dari ${props.totalPage}</span>
             <span class="pull-left">
               Page 
-              <select id="jumpPage" onclick="jumpPage(this)" class="smooth space-left space-right">${tpage}</select>
+              <select id="jumpPage" onchange="jumpPage(this)" class="smooth space-left space-right">${tpage}</select>
               <button onclick="prevPage()" class="btn btn-sm smooth space-right"><i class="mdi mdi-arrow-left-bold space-right"></i> Prev</button>
               <button onclick="nextPage()" class="btn btn-sm smooth">Next <i class="mdi mdi-arrow-right-bold space-left"></i></button>
             </span>
           </div>`;
         } else {
-          return '<div class="row"><message class="warning">Data tidak ditemukan!</message></div>';
+          return '<div class="row"><message class="warning">'+props.message+'</message></div>';
         }
       }
     });
     app.render();
 
     function searchData(value, pagenow, itemperpage) {
-      reset();
+      refresh('Proses loading data...');
       ajax({
         headers: {
           'pbj-api-key': 'ngupas@2020',
@@ -102,32 +104,42 @@
         katakunci:value,
         sortby:1,
         sortbyasc:0,
-        filterby:0,
-        filter:'',
+        filterby:filterBy,
+        filter:filter,
         page:pagenow,
         limit:itemperpage
       })
       .then(function (response, xhr) {
-        var totalrec = parseInt(response.totalrecord);
-        var totalpage = Math.ceil(totalrec/itemperpage);
-        totalPage = totalpage;
-        app.data.table = response.data;
-        app.data.pageNow = pagenow;
-        app.data.totalPage = totalpage;
-        app.data.totalRecords= totalrec;
+        if(response.sts_res === 'true' && response.data.length > 0) {
+          var totalrec = parseInt(response.totalrecord);
+          var totalpage = Math.ceil(totalrec/itemperpage);
+          totalPage = totalpage;
+          app.data.table = response.data;
+          app.data.pageNow = pagenow;
+          app.data.totalPage = totalpage;
+          app.data.totalRecords= totalrec;
+        } else {
+          reset();
+        }
       })
       .catch(function(response, xhr) {
         console.log(xhr.responseText);
+        reset();
       });
     }
 
-    function reset() {
-      // pageNow = 1;
-      // totalPage = 0;
+    function refresh(msg) {
       app.data.table = [];
       app.data.pageNow = pageNow;
       app.data.totalPage = 0;
       app.data.totalRecords= 0;
+      app.data.message = msg;
+    }
+
+    function reset() {
+      pageNow = 1;
+      totalPage = 0;
+      refresh('Data tidak ditemukan!');
     }
 
     // Next Page
@@ -144,6 +156,65 @@
         pageNow = pageNow - 1;
         searchData(Dom.id('search').value,pageNow,itemPerPage);
       }
+    }
+
+    // Set Filter By
+    function setFilterBy(self) {
+      filterBy = parseInt(self.value);
+      if(filterBy > 0) {
+        Dom.id('filter').style.display = 'inline';
+        _setDataFilter(filterBy);
+      } else {
+        _clearDataFilter();
+        Dom.id('filter').style.display = 'none';
+        filter = '';
+      }
+    }
+
+    // Set Filter
+    function setFilter(self) {
+      filter = self.value;
+    }
+
+    function _clearDataFilter() {
+      var select = Dom.id("filter");
+      var length = select.options.length;
+      for (var i = 0; i < length; i++) {
+        select.options[i] = null;
+      }
+    }
+
+    function _setDataFilter(number) {
+      switch(true) {
+        case (number === 1) :
+          _getDataFilter('tahap');
+          break;
+      }
+    }
+
+    function _getDataFilter(name) {
+      _clearDataFilter();
+      var select = Dom.id("filter");
+      var url = '@{CONF.baseUrl}/num/'+name;
+      ajax({
+        headers: {
+          'pbj-api-key':'ngupas@2020',
+          'content-type':'application/json'
+        }
+      })
+      .post(url, {})
+      .then(function(response, xhr) {
+        if(response.sts_res === 'true' && response.data.length > 0) {
+          var opt = '<option value="">Semua</option>"';
+          for (var x=0; x<response.data.length; x++) {
+            opt += '<option value="'+response.data[x].tahap+'">'+response.data[x].tahap+'</option>';
+          }
+          Dom.append(Dom.id('filter'),opt);
+        }
+      })
+      .catch(function(response, xhr){
+        console.log(xhr.responseText);
+      })
     }
 
     // Go / Jump to page

@@ -1,5 +1,5 @@
 {
-  "pid": 8847,
+  "pid": 2934,
   "stats": [
     {
       "id": null,
@@ -8,26 +8,26 @@
         "total": "3.4.6",
         "app": "1.0.0"
       },
-      "pid": 8847,
+      "pid": 2934,
       "thread": "",
       "mode": "debug",
       "overload": 0,
-      "date": "2020-12-03T11:48:02.095Z",
-      "memory": 23.19,
-      "rm": 7,
+      "date": "2020-12-03T12:58:22.104Z",
+      "memory": 20.23,
+      "rm": 3,
       "fm": 10,
       "wm": 0,
       "mm": 0,
-      "om": 41,
+      "om": 37,
       "em": 0,
       "dbrm": 0,
       "dbwm": 0,
       "usage": 0,
-      "requests": 152,
+      "requests": 371,
       "pending": 0,
       "errors": 0,
       "timeouts": 0,
-      "uptime": 60,
+      "uptime": 56,
       "online": 0
     }
   ]
