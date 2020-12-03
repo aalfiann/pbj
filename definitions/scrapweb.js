@@ -55,7 +55,7 @@ const getAuthenticityToken = async () => {
             var buatjson = await transformJson(page);
             if (buatjson.data.length > 0) {
                 for (var jj=0;jj<buatjson.data.length;jj++) {
-                    insertdatatender(obj.data[jjj].url_tender_id, obj.data[jjj].url_tender_link, buatjson.data[jj][0], buatjson.data[jj][1], buatjson.data[jj][2], buatjson.data[jj][3],
+                    var buatinsert = await asyncinsertdatatender(obj.data[jjj].url_tender_id, obj.data[jjj].url_tender_link, buatjson.data[jj][0], buatjson.data[jj][1], buatjson.data[jj][2], buatjson.data[jj][3],
                     buatjson.data[jj][4], buatjson.data[jj][8], buatjson.data[jj][6] + " - " + buatjson.data[jj][5]+ " - " + buatjson.data[jj][7], buatjson.data[jj][10], obj.data[jjj].tahap_update_pengecualian);
                 }
             }
@@ -102,44 +102,67 @@ function geturltender(type, req, receivetime){
 					if (err) throw err;
 
 					if (count > 0) {
-						resolve(JSON.parse(helpernya.BalikanHeaderFINALOK("true", "Berhasil buka URL.", "", "Perhatikan URL yang tampil.", JSON.stringify(req), receivetime, JSON.stringify(response))));
+						resolve(JSON.parse(helpernya.BalikanHeaderFINALOK("true", "Berhasil buka URL.", "", "Perhatikan URL yang tampil.", JSON.stringify(req), receivetime, JSON.stringify(response), count)));
 					} else {
-						reject(JSON.parse(helpernya.BalikanHeaderFINALOK("false", "Gagal buka URL Tender.", "gagalbuka", "Perhatikan parameter yang dikirimkan.", JSON.stringify(req), receivetime, "")));
+						reject(JSON.parse(helpernya.BalikanHeaderFINALOK("false", "Gagal buka URL Tender.", "gagalbuka", "Perhatikan parameter yang dikirimkan.", JSON.stringify(req), receivetime, "", 0)));
 					}
 				});
 			});
 		} catch(err) {
-            reject(JSON.parse(helpernya.BalikanHeaderFINALOK("false", "Gagal buka URL Tender.", "gagalbuka", "Perhatikan parameter yang dikirimkan.", JSON.stringify(req), receivetime, "")));
+            reject(JSON.parse(helpernya.BalikanHeaderFINALOK("false", "Gagal buka URL Tender.", "gagalbuka", "Perhatikan parameter yang dikirimkan.", JSON.stringify(req), receivetime, "", 0)));
 		}
 	});
 };
 
+async function asyncinsertdatatender(urllinkid, siteUrl, kode, nama_paket, tender_label, instansi, tahapnya,
+    hps, kategori, sistem_pengadaan, tahun_anggaran, nilai_kontrak, update_pengecualian) {
+	var data = await insertdatatender(urllinkid, siteUrl, kode, nama_paket, tender_label, instansi, tahapnya,
+        hps, kategori, sistem_pengadaan, tahun_anggaran, nilai_kontrak, update_pengecualian).catch(err => {
+        console.log(err);
+      });
+	return data;
+};
+
 function insertdatatender(urllinkid, siteUrl, kode, data_paket, instansi, tahap,
     hps, data_tahun_anggaran, sistem_pengadaan, nilai_kontrak, update_pengecualian) {
-    var helpernya = require('../definitions/helper');
+    return new Promise(function(resolve, reject) {
+        try {
+            var helpernya = require('../definitions/helper');
 
-    var nama_paket = "";
-    var tender_label = "";
-    var kategori = "";
-    var tahun_anggaran = "";
-    
-    var utksplitlabel = data_paket.split('<span class=\'label label-warning\'>');
-    nama_paket = utksplitlabel[0].trim();
-    if (utksplitlabel.length > 1) {
-        tender_label = utksplitlabel[1].replace("</span>", "");
-    } else {
-        tender_label = "";
-    }
-    var utksplittahunanggaran = data_tahun_anggaran.split('-');
-    kategori = utksplittahunanggaran[0].trim();
-    if (utksplittahunanggaran.length > 1) {
-        tahun_anggaran = utksplittahunanggaran[1].replace("-", "");
-        tahun_anggaran = tahun_anggaran.replace("TA", "");
-        tahun_anggaran = tahun_anggaran.replace(" ", "");
-        tahun_anggaran = tahun_anggaran.trim();
-    } else {
-        tahun_anggaran = "";
-    }
-    helpernya.insertdttender(urllinkid, siteUrl, kode, nama_paket, tender_label, instansi, tahap,
-        hps, kategori, sistem_pengadaan, tahun_anggaran, nilai_kontrak, update_pengecualian);
+            var nama_paket = "";
+            var tender_label = "";
+            var kategori = "";
+            var tahun_anggaran = "";
+            var tahapnya = tahap.replace("[...]","").trim();
+
+            var utksplitlabel = data_paket.split('<span class=\'label label-warning\'>');
+            nama_paket = utksplitlabel[0].trim();
+            if (utksplitlabel.length > 1) {
+                tender_label = utksplitlabel[1].replace("</span>", "");
+            } else {
+                tender_label = "";
+            }
+            var utksplittahunanggaran = data_tahun_anggaran.split('-');
+            kategori = utksplittahunanggaran[0].trim();
+            if (utksplittahunanggaran.length > 1) {
+                tahun_anggaran = utksplittahunanggaran[1].replace("-", "");
+                tahun_anggaran = tahun_anggaran.replace("TA", "");
+                tahun_anggaran = tahun_anggaran.replace(" ", "");
+                tahun_anggaran = tahun_anggaran.trim();
+            } else {
+                tahun_anggaran = "";
+            }
+            var initializePromise = helpernya.insertdttender(urllinkid, siteUrl, kode, nama_paket, tender_label, instansi, tahapnya,
+                hps, kategori, sistem_pengadaan, tahun_anggaran, nilai_kontrak, update_pengecualian);
+            initializePromise.then(function() {
+                resolve();
+            }, function(err) {
+                console.log(err)
+                reject();
+            });
+        } catch(err) {
+            console.log(err);
+            reject();
+        }
+    });
 };

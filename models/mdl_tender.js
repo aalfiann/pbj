@@ -1,7 +1,7 @@
-function BalikanHeaderFINAL (stsres, stsdes, stsfal, note, req, receivetime, datanya) {
+function BalikanHeaderFINAL (stsres, stsdes, stsfal, note, req, receivetime, datanya, totalrecord) {
 	var helpernya = require('../definitions/helper');
 
-	var teksnya = helpernya.BalikanHeaderFINALOK(stsres, stsdes, stsfal, note, req, receivetime, datanya);
+	var teksnya = helpernya.BalikanHeaderFINALOK(stsres, stsdes, stsfal, note, req, receivetime, datanya, totalrecord);
 	return teksnya;
 };
 
@@ -11,7 +11,7 @@ exports.APIOpenListTender = function(katakunci, sortby, sortbyasc, filterby, fil
         
     }, function(err) {
         console.log(err);
-        self.json(JSON.parse(BalikanHeaderFINAL("false", err, "error", "Perhatikan parameter yang dikirimkan.", JSON.stringify(req), receivetime, "")));
+        self.json(JSON.parse(BalikanHeaderFINAL("false", err, "error", "Perhatikan parameter yang dikirimkan.", JSON.stringify(req), receivetime, ""), 0));
     });
 };
 
@@ -20,8 +20,6 @@ function OpenListTender(katakunci, sortby, sortbyasc, filterby, filter, page, li
         var async = require('async');
 		var nosql = NOSQL('dt_tender');
 		var buatjson = [];
-		var buatjsonbaru = [];
-		var totalpagenya = 1;
 
 		if (page < 0 || typeof page != "number") {
 			reject('Nilai halaman tidak bisa kurang dari 0 (nol).');
@@ -96,7 +94,7 @@ function OpenListTender(katakunci, sortby, sortbyasc, filterby, filter, page, li
                             if (err) throw err;
                         });
                         if (buatjson.length > 0) {
-                            self.json(JSON.parse(BalikanHeaderFINAL("true", "Berhasil buka Data Tender.", "", "Total semua data: " + count, JSON.stringify(req), receivetime, JSON.stringify(buatjson))));					
+                            self.json(JSON.parse(BalikanHeaderFINAL("true", "Berhasil buka data tender.", "", "Total semua data: " + count, JSON.stringify(req), receivetime, JSON.stringify(buatjson), count)));					
                             resolve("Berhasil buka data tender.");
                         } else {
                             reject("Tidak ada data tender.");
