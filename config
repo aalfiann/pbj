@@ -1,6 +1,8 @@
-name                            : Total.js
-author                          : You company name
+name                            : PBJ
+title                           : Pengadaan Barang dan Jasa
+author                          : Ngupas Developer
 version                         : 1.0.0
+copyright                       : © 2020 pbj.com
 
 // Mail settings
 mail_smtp                       : smtp.yourwebsite.com

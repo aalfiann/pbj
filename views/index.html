@@ -1,52 +1,68 @@
-@{title('Something awesome')}
+@{title('Pengadaan Barang dan Jasa')}
 
 @{section meta}
 	@{view('partial-meta')}
 @{end}
 @{section menu}
-	@{view('partial-menu-navbar')}
-	@{view('partial-menu-aside')}
+	@{view('partial-menu')}
 @{end}
 
-  <section class="section is-title-bar">
-    <div class="level">
-      <div class="level-left">
-        <div class="level-item">
-          <ul>
-            <li><a href="@{CONF.baseUrl}" class="has-text-dark">Home</a></li>
-            <li>Blank page</li>
-          </ul>
-        </div>
-      </div>
-      <div class="level-right">
-        <div class="level-item">
-          <div class="buttons is-right">
-            <a href="https://admin-one-html.justboil.me/" target="_blank" class="button is-primary">
-              <span class="icon"><i class="mdi mdi-credit-card-outline"></i></span>
-              <span>Premium Demo</span>
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-  <section class="hero is-hero-bar">
-    <div class="hero-body">
-      <div class="level">
-        <div class="level-left">
-          <div class="level-item"><h1 class="title">
-            Blank page
-          </h1></div>
-        </div>
-        <div class="level-right" style="display: none;">
-          <div class="level-item"></div>
-        </div>
-      </div>
-    </div>
-  </section>
-  <section class="section is-main-section">
-    <!-- content here -->
-  </section>
+<div class="container">
+  <h1>@{CONF.title}</h1>
+  <p>
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+  </p>
+  <hr>
+  <select id="filter" class="smooth" style="margin-right:5px;">
+    <option>Semua</option>
+  </select>
+  <input id="search" type="text" style="width:50%;" class="smooth" placeholder="input & enter"><span class="addon"><i class="mdi mdi-magnify"></i></span>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Sold</th>
+        <th>Revenue</th>
+        <th>Profit</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td data-label="#">1</td>
+        <td data-label="Sold">5</td>
+        <td data-label="Revenue">10</td>
+        <td data-label="Profit">2</td>
+      </tr>
+      <tr>
+        <td data-label="#">10</td>
+        <td data-label="Sold">50</td>
+        <td data-label="Revenue">100</td>
+        <td data-label="Profit">20</td>
+      </tr>
+      <tr>
+        <td data-label="#">100</td>
+        <td data-label="Sold">500</td>
+        <td data-label="Revenue">1000</td>
+        <td data-label="Profit">200</td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="row">
+    <span class="pull-right" style="margin-top:10px;">Halaman 1 dari 1000</span>
+    <span class="pull-left">
+      Page 
+      <select class="smooth" style="margin-left:5px;margin-right: 5px;">
+        <option>1</option>
+      </select>
+      <button class="btn btn-sm smooth" style="margin-right:5px;">Prev</button>
+      <button class="btn btn-sm smooth">Next</button>
+    </span>
+  </div>
+</div>
+
+@{section footer}
+  @{view('partial-footer')}
+@{end}
 
 @{section js}
 	@{view('partial-js')}

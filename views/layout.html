@@ -1,16 +1,16 @@
 <!DOCTYPE html>
-<html lang="en" class="has-aside-left has-aside-mobile-transition has-navbar-fixed-top has-aside-expanded">
-<head>
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<meta name="author" content="@{CONF.author}">
-	@{section('meta')}
-	@{import('meta','favicon.ico')}
-</head>
-<body>
-	@{section('menu')}
-	@{body}
-	@{section('js')}
-</body>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="@{CONF.author}">
+		@{section('meta')}
+		@{import('meta','favicon.ico')}
+	</head>
+	<body>
+		@{section('menu')}
+		@{body}
+		@{section('footer')}
+		@{section('js')}
+	</body>
 </html>
