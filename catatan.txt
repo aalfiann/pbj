@@ -11,7 +11,7 @@ url --> http://localhost:8000/tender/datatender
 param --> {"katakunci":"","sortby":1,"sortbyasc":0,"filterby":0,"filter":"","page":1,"limit":10}
 
 ----- keterangan parameter
-katakunci: mengacu pada kode / nama paket / tendel_label / instansi / tahap / kategori / sistem_pengadaan / tahun_anggaran / nilai_kontrak
+katakunci: mengacu pada kode / nama paket / tender_label / instansi / tahap / kategori / sistem_pengadaan / tahun_anggaran / nilai_kontrak
 
 sort_by_id: 
 1 = Kode
