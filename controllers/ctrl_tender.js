@@ -4,10 +4,10 @@ exports.install = function() {
 	ROUTE('POST /tender/datatender/', error401, ['unauthorize', 25000]);
 };
 
-function BalikanHeaderFINAL (stsres, stsdes, stsfal, note,  req, receivetime, datanya) {
+function BalikanHeaderFINAL (stsres, stsdes, stsfal, note, req, receivetime, datanya, totalrecord) {
 	var helpernya = require('../definitions/helper');
 
-	var teksnya = helpernya.BalikanHeaderFINALOK(stsres, stsdes, stsfal, note, req, receivetime, datanya);
+	var teksnya = helpernya.BalikanHeaderFINALOK(stsres, stsdes, stsfal, note, req, receivetime, datanya, totalrecord);
 	return teksnya;
 };
 
@@ -26,10 +26,10 @@ function datatender() {
 
 	self.model = self.body;
     if (self.model.katakunci === undefined || self.model.sortby === undefined || self.model.sortbyasc === undefined || self.model.filterby === undefined || self.model.filter === undefined || self.model.page === undefined || self.model.limit === undefined) {
-		self.json(JSON.parse(BalikanHeaderFINAL("false", "Invalid Parameter!", "invalidparameter", "Perhatikan parameter yang dikirimkan, ada yang kurang.", receivetime, JSON.stringify(self.model), "")));
+		self.json(JSON.parse(BalikanHeaderFINAL("false", "Invalid Parameter!", "invalidparameter", "Perhatikan parameter yang dikirimkan, ada yang kurang.", JSON.stringify(self.model), receivetime, "", 0)));
 	} else {
 		if (self.model.filterby === "" || self.model.page === "" || self.model.limit === "") {
-			self.json(JSON.parse(BalikanHeaderFINAL("false", "Parameter tidak boleh kosong.", "tidakbolehkosong", "Perhatikan parameter yang dikirimkan, ada yang tidak boleh kosong.", receivetime, JSON.stringify(self.model), "")));
+			self.json(JSON.parse(BalikanHeaderFINAL("false", "Parameter tidak boleh kosong.", "tidakbolehkosong", "Perhatikan parameter yang dikirimkan, ada yang tidak boleh kosong.", JSON.stringify(self.model), receivetime, "", 0)));
 		} else {
 			modelnya.APIOpenListTender(self.model.katakunci, self.model.sortby, self.model.sortbyasc, self.model.filterby, self.model.filter, self.model.page, self.model.limit, self, self.model, receivetime);
 		}

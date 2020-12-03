@@ -20,9 +20,6 @@ function urltender() {
 };
 
 function scrapweb() {
-    var tzoffset = (new Date()).getTimezoneOffset() * 60000;
-    var receivetime = (new Date(Date.now() - tzoffset)).toISOString().replace("T", " ").replace("Z", "");
-    
     var scrapwebnya = require('../definitions/scrapweb');
 	scrapwebnya.runScrapper();
 };
