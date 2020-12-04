@@ -1,20 +1,16 @@
 "use strict";
 
-var pageNow = 1;
-var totalPage = 0;
-var itemPerPage = 25;
-var filterBy = 0;
-var filter = '';
-
 // Reactive UI
 var app = new Reef('#app', {
   data: {
     table: [],
-    pageNow: pageNow,
-    itemPerPage: itemPerPage,
+    pageNow: 1,
+    itemPerPage: 25,
     totalPage: 0,
     totalRecords: 0,
-    message: ''
+    message: '',
+    filterBy: 0,
+    filter: ''
   },
   template: function (props) {
     if(props.table.length > 0) {
@@ -22,7 +18,7 @@ var app = new Reef('#app', {
       var tpage = '';
       for (var i=1;i<=props.totalPage;i++) {
         // if current i same as pagenow then add attribute selected
-        tpage += '<option '+(i === pageNow ? 'selected':'')+'>'+i+'</option>';
+        tpage += '<option '+(i === props.pageNow ? 'selected':'')+'>'+i+'</option>';
       }
       return `<table class="table space-top">
         <thead>
@@ -39,7 +35,7 @@ var app = new Reef('#app', {
             ${props.table.map(function(item, index) {
             var num = (index+1);
             return `<tr>
-                <td data-label="#">${num+((props.pageNow-1)*itemPerPage)}</td>
+                <td data-label="#">${num+((props.pageNow-1)*props.itemPerPage)}</td>
                 <td data-label="Kode">${item.kode}</td>
                 <td data-label="Nama Paket">${item.nama_paket}</td>
                 <td data-label="Instansi">${item.instansi}</td>
@@ -67,7 +63,7 @@ var app = new Reef('#app', {
 app.render();
 
 // Search Data
-function searchData(value, pagenow, itemperpage) {
+function searchData(value, pagenow, itemperpage, filterby, filter) {
   refresh('Proses loading data...');
   ajax({
     headers: {
@@ -79,7 +75,7 @@ function searchData(value, pagenow, itemperpage) {
     katakunci:value,
     sortby:1,
     sortbyasc:0,
-    filterby:filterBy,
+    filterby:filterby,
     filter:filter,
     page:pagenow,
     limit:itemperpage
@@ -88,9 +84,9 @@ function searchData(value, pagenow, itemperpage) {
     if(response.sts_res === 'true' && response.data.length > 0) {
       var totalrec = parseInt(response.totalrecord);
       var totalpage = Math.ceil(totalrec/itemperpage);
-      totalPage = totalpage;
       app.data.table = response.data;
       app.data.pageNow = pagenow;
+      app.data.itemPerPage = itemperpage;
       app.data.totalPage = totalpage;
       app.data.totalRecords= totalrec;
     } else {
@@ -106,51 +102,51 @@ function searchData(value, pagenow, itemperpage) {
 // Refresh Data
 function refresh(msg) {
   app.data.table = [];
-  app.data.pageNow = pageNow;
+  app.data.pageNow = 1;
   app.data.totalPage = 0;
   app.data.totalRecords= 0;
   app.data.message = msg;
+  app.data.filterBy = 0;
+  app.data.filter = '';
 }
 
 // Reset Data
 function reset() {
-  pageNow = 1;
-  totalPage = 0;
   refresh('Data tidak ditemukan!');
 }
 
 // Next Page
 function nextPage() {
-  if(pageNow < totalPage) {
-    pageNow = pageNow + 1;
-    searchData(Dom.id('search').value,pageNow,itemPerPage);
+  if(app.data.pageNow < app.data.totalPage) {
+    app.data.pageNow = app.data.pageNow + 1;
+    searchData(Dom.id('search').value,app.data.pageNow,app.data.itemPerPage, app.data.filterBy, app.data.filter);
   }
 }
 
 // Previous Page
 function prevPage() {
-  if(pageNow > 1) {
-    pageNow = pageNow - 1;
-    searchData(Dom.id('search').value,pageNow,itemPerPage);
+  if(app.data.pageNow > 1) {
+    app.data.pageNow = app.data.pageNow - 1;
+    searchData(Dom.id('search').value,app.data.pageNow,app.data.itemPerPage, app.data.filterBy, app.data.filter);
   }
 }
 
 // Set Filter By
 function setFilterBy(self) {
-  filterBy = parseInt(self.value);
-  if(filterBy > 0) {
+  app.data.filterBy = parseInt(self.value);
+  if(app.data.filterBy > 0) {
     Dom.id('filter').style.display = 'inline';
-    _setDataFilter(filterBy);
+    _setDataFilter(app.data.filterBy);
   } else {
     _clearDataFilter();
     Dom.id('filter').style.display = 'none';
-    filter = '';
+    app.data.filter = '';
   }
 }
 
 // Set Filter
 function setFilter(self) {
-  filter = self.value;
+  app.data.filter = self.value;
 }
 
 function _clearDataFilter() {
@@ -195,14 +191,14 @@ function _getDataFilter(name) {
 
 // Go / Jump to page
 function jumpPage(self) {
-  pageNow = parseInt(self.value);
-  searchData(Dom.id('search').value,pageNow,itemPerPage);
+  app.data.pageNow = parseInt(self.value);
+  searchData(Dom.id('search').value,app.data.pageNow,app.data.itemPerPage, app.data.filterBy, app.data.filter);
 }
 
 // Submit Search
 function submitSearch() {
-  pageNow = 1;
-  searchData(Dom.id('search').value, pageNow, itemPerPage);
+  app.data.pageNow = 1;
+  searchData(Dom.id('search').value, app.data.pageNow, app.data.itemPerPage, app.data.filterBy, app.data.filter);
 }
 
 // Event listener when search box is entered
@@ -213,4 +209,4 @@ Dom.id('search').addEventListener('keyup', function(e) {
 });
 
 // load data
-searchData(Dom.id('search').value,pageNow,itemPerPage);
+searchData(Dom.id('search').value,1,25,0,'');
