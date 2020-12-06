@@ -5,7 +5,9 @@
   "main": "debug.js",
   "dependencies": {
     "async": "^3.2.0",
+    "dbms": "^0.8.7",
     "moment": "^2.29.1",
+    "pg": "^8.5.1",
     "puppeteer": "^5.5.0",
     "puppeteer-core": "^5.5.0",
     "sync-loop": "^0.1.1",
