@@ -3,6 +3,8 @@ npm i puppeteer
 npm i moment
 npm i async
 npm i uuid
+npm install pg
+npm install dbms
 
 =====================
 API Buka List Tender:

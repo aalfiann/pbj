@@ -1,7 +1,7 @@
 exports.install = function() {
     CORS('/tender/*', ['get', 'post', 'put', 'delete'], true);
-    ROUTE('POST /tender/datatender/', datatender, ['authorize', 25000]);
-	ROUTE('POST /tender/datatender/', error401, ['unauthorize', 25000]);
+    ROUTE('POST /tender/datatender/', datatender, ['authorize', 35000]);
+	ROUTE('POST /tender/datatender/', error401, ['unauthorize', 35000]);
 };
 
 function BalikanHeaderFINAL (stsres, stsdes, stsfal, note, req, receivetime, datanya, totalrecord) {

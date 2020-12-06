@@ -8,5 +8,6 @@ test.pid
 test.js.json
 package-lock.json
 package.json
+databases/
 node_modules/
 tmp/

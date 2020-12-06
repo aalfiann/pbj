@@ -16,5 +16,9 @@ baseUrl                         : http://localhost:8000
 baseAssetsUrl                   : http://localhost:8000
 siteName                        : PBJ
 
+//DATABASE
+database                        : postgres://postgres:kosong@localhost:5432/pbj
+
 // ROW TENDER
 row_ambil                       : 100
+page_partial                    : 20

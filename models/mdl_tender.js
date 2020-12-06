@@ -11,99 +11,119 @@ exports.APIOpenListTender = function(katakunci, sortby, sortbyasc, filterby, fil
         
     }, function(err) {
         console.log(err);
-        self.json(JSON.parse(BalikanHeaderFINAL("false", err, "error", "Perhatikan parameter yang dikirimkan.", JSON.stringify(req), receivetime, ""), 0));
+        self.json(JSON.parse(BalikanHeaderFINAL("false", err, "error", "Perhatikan parameter yang dikirimkan.", JSON.stringify(req), receivetime, "", 0)));
     });
 };
 
 function OpenListTender(katakunci, sortby, sortbyasc, filterby, filter, page, limit, self, req, receivetime) {
 	return new Promise(function(resolve, reject) {
+        var db = DBMS();
         var async = require('async');
-		var nosql = NOSQL('dt_tender');
 		var buatjson = [];
 
-		if (page < 0 || typeof page != "number") {
+        if (page < 0 || typeof page != "number") {
 			reject('Nilai halaman tidak bisa kurang dari 0 (nol).');
 		}
 		if (limit < 0 || typeof limit != "number") {
 			reject('Jumlah row tiap halaman tidak bisa kurang dari 0 (nol).');
-		}
+        }
 		try {
-			nosql.find().make(function(builder) {
-                builder.where('status_active_id', 1);
-                if (katakunci != undefined && katakunci != '') {
-                    builder.or();
-                    builder.search('kode', katakunci);
-                    builder.search('nama_paket', katakunci);
-                    builder.search('tendel_label', katakunci);
-                    builder.search('instansi', katakunci);
-                    builder.search('tahap', katakunci);
-                    builder.search('kategori', katakunci);
-                    builder.search('sistem_pengadaan', katakunci);
-                    builder.search('tahun_anggaran', katakunci);
-                    builder.search('nilai_kontrak', katakunci);
-                    builder.end();
-                }
-                if (page > 0 && limit > 0) {
-                    builder.paginate(page, limit);
-                }
-                var nilaiasc = false; //descending
-                if (sortbyasc == 1) {
-                    nilaiasc = true;  //ascending
-                }
-                if (sortby == 1) {
-                    builder.sort('kode', nilaiasc);
-                } else if (sortby == 2) {
-                    builder.sort('nama_paket', nilaiasc);
-                } else if (sortby == 3) {
-                    builder.sort('tender_label', nilaiasc);
-                } else if (sortby == 4) {
-                    builder.sort('instansi', nilaiasc);
-                } else if (sortby == 5) {
-                    builder.sort('nilai_kontrak', nilaiasc);
-                } else {
-                    builder.sort('kode', false); //descending
-                }
-				builder.callback(function(err, response, count) {
-					if (err) throw(err);
-					
-					if (count > 0) {
-                        var index = 0;
-						async.each(response, function(isinya, callback) {
-                            var buatjsonarr = {
-                                tender_id: response[index].tender_id,
-                                url_tender_id: response[index].url_tender_id,
-                                url_tender_link: response[index].url_tender_link,
-                                kode: response[index].kode,
-                                nama_paket: response[index].nama_paket,
-                                tender_label: response[index].tender_label,
-                                instansi: response[index].instansi,
-                                tahap: response[index].tahap,
-                                hps: response[index].hps,
-                                kategori: response[index].kategori,
-                                sistem_pengadaan: response[index].sistem_pengadaan,
-                                tahun_anggaran: response[index].tahun_anggaran,
-                                nilai_kontrak: response[index].nilai_kontrak,
-                                created_date: response[index].created_date,
-                                modified_date: response[index].modified_date,
-                                status_active_id: response[index].status_active_id,
-                             }
-                            buatjson.push(buatjsonarr);
-                            index = index + 1;
-                            callback(null, "");
-						}, function(err) {
-                            if (err) throw err;
-                        });
-                        if (buatjson.length > 0) {
-                            self.json(JSON.parse(BalikanHeaderFINAL("true", "Berhasil buka data tender.", "", "Total semua data: " + count, JSON.stringify(req), receivetime, JSON.stringify(buatjson), count)));					
-                            resolve("Berhasil buka data tender.");
-                        } else {
-                            reject("Tidak ada data tender.");
+            var utkinput = [1];
+            var sambungwhere = "WHERE (dt_tender.status_active_id = $1) ";
+            if (katakunci != undefined && katakunci != null && katakunci != '') {
+                katakunci =  "%" + katakunci + "%";
+                utkinput =  [1, katakunci];
+                sambungwhere = sambungwhere + "AND ((dt_tender.kode like $2) OR (dt_tender.nama_paket like $2) OR (dt_tender.tender_label like $2) OR (dt_tender.instansi like $2) OR (dt_tender.tahap like $2) OR (dt_tender.kategori like $2) OR (dt_tender.sistem_pengadaan like $2) OR (dt_tender.tahun_anggaran like $2) OR (dt_tender.nilai_kontrak like $2)) ";
+            } else {
+                katakunci =  "%" + katakunci + "%";
+                utkinput =  [1, katakunci];
+                sambungwhere = sambungwhere + "AND (dt_tender.kode like $2) ";
+            }
+            var sambungorderby = "";
+            var sambunglimitoffset = "";
+
+            var nilaiasc = "DESC "; //descending
+            if (sortbyasc == 1) {
+                nilaiasc = "ASC ";  //ascending
+            }
+            if (sortby == 1) {
+                sambungorderby = "ORDER BY dt_tender.kode " + nilaiasc;
+            } else if (sortby == 2) {
+                sambungorderby = "ORDER BY dt_tender.nama_paket " + nilaiasc;
+            } else if (sortby == 3) {
+                sambungorderby = "ORDER BY dt_tender.tender_label " + nilaiasc;
+            } else if (sortby == 4) {
+                sambungorderby = "ORDER BY dt_tender.instansi " + nilaiasc;
+            } else if (sortby == 5) {
+                sambungorderby = "ORDER BY dt_tender.nilai_kontrak " + nilaiasc;
+            } else {
+                sambungorderby = "ORDER BY dt_tender.kode DESC ";
+            }
+            if (page > 0 && limit > 0) {
+                sambunglimitoffset = "LIMIT " + limit + " OFFSET " + page;
+            }
+            if (filterby.length > 0) {
+                if (filterby.length <= filter.length) {
+                    var nilaiparam = 0;
+                    for (var i=0;i<filterby.length;i++) {
+                        nilaiparam = i+3;
+                        if (filterby[i] == 1) {
+                            sambungwhere = sambungwhere + "AND (dt_tender.url_tender_id like $" + nilaiparam + ") ";
+                        } else if (filterby[i] == 2) {
+                            sambungwhere = sambungwhere + "AND (dt_tender.instansi like $" + nilaiparam + ") ";
+                        } else if (filterby[i] == 3) {
+                            sambungwhere = sambungwhere + "AND ((dt_tender_peserta.nama_peserta like $" + nilaiparam + ") OR (dt_tender_peserta.npwp like $" + nilaiparam +")) ";
+                        } else if (filterby[i] == 4) {
+                            sambungwhere = sambungwhere + "AND (dt_tender.tahap like $" + nilaiparam + ") ";
                         }
-					} else {
-						reject("Tidak ada data tender.");
-					}
-				});
-			});
+                        utkinput.push('%'+ filter[i] + '%');
+                    }
+                } else {
+                    reject("Filter by tidak bisa lebih besar dari Filter.");
+                }
+            }
+            console.log(utkinput);
+            db.query('SELECT *, dt_tender.tender_id as tender_idnya FROM dt_tender LEFT OUTER JOIN dt_tender_peserta ON dt_tender.tender_id = dt_tender_peserta.tender_id ' + 
+            sambungwhere + sambungorderby + sambunglimitoffset, utkinput).callback(function(err, response) {
+            if (err) throw err;
+
+            if (response.length > 0) {
+                var index = 0;
+                async.each(response, function(isinya, callback) {
+                    var buatjsonarr = {
+                        tender_id: response[index].tender_idnya,
+                        url_tender_id: response[index].url_tender_id,
+                        url_tender_link: response[index].url_tender_link,
+                        kode: response[index].kode,
+                        nama_paket: response[index].nama_paket,
+                        tender_label: response[index].tender_label,
+                        instansi: response[index].instansi,
+                        tahap: response[index].tahap,
+                        hps: response[index].hps,
+                        kategori: response[index].kategori,
+                        sistem_pengadaan: response[index].sistem_pengadaan,
+                        tahun_anggaran: response[index].tahun_anggaran,
+                        nilai_kontrak: response[index].nilai_kontrak,
+                        created_date: response[index].created_date,
+                        modified_date: response[index].modified_date,
+                        status_active_id: response[index].status_active_id,
+                        }
+                    buatjson.push(buatjsonarr);
+                    index = index + 1;
+                    callback(null, "");
+                }, function(err) {
+                    if (err) throw err;
+                });
+                if (buatjson.length > 0) {
+                    self.json(JSON.parse(BalikanHeaderFINAL("true", "Berhasil buka data tender.", "", "Total semua data: " + buatjson.length, JSON.stringify(req), receivetime, JSON.stringify(buatjson), buatjson.length)));					
+                    resolve("Berhasil buka data tender.");
+                } else {
+                    reject("Tidak ada data tender.");
+                }
+            } else {
+                reject("Tidak ada data tender.");
+            }
+        });
 		} catch(err) {
 			reject(err);
 		}
