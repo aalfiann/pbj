@@ -55,7 +55,7 @@ var app = new Reef('#app', {
         </span>
         </div>`;
     } else {
-      return '<div class="row"><message class="warning">'+props.message+'</message></div>';
+      return (props.message) ? '<div class="row"><message class="warning">'+props.message+'</message></div>' : '';
     }
   }
 });
@@ -75,8 +75,8 @@ function searchData(value, pagenow, itemperpage, filterby, filter) {
     katakunci:value,
     sortby:1,
     sortbyasc:0,
-    filterby:filterby,
-    filter:filter,
+    filterby:(filterby === '' || filterby === 0 ? []: [filterby]),
+    filter:(filter.length > 0 ? [filter]: ['']),
     page:pagenow,
     limit:itemperpage
   })
@@ -106,8 +106,6 @@ function refresh(msg) {
   app.data.totalPage = 0;
   app.data.totalRecords= 0;
   app.data.message = msg;
-  app.data.filterBy = 0;
-  app.data.filter = '';
 }
 
 // Reset Data
@@ -119,7 +117,7 @@ function reset() {
 function nextPage() {
   if(app.data.pageNow < app.data.totalPage) {
     app.data.pageNow = app.data.pageNow + 1;
-    searchData(Dom.id('search').value,app.data.pageNow,app.data.itemPerPage, app.data.filterBy, app.data.filter);
+    searchData(Dom.id('search').value,app.data.pageNow,app.data.itemPerPage, app.data.filterby, app.data.filter);
   }
 }
 
@@ -127,20 +125,24 @@ function nextPage() {
 function prevPage() {
   if(app.data.pageNow > 1) {
     app.data.pageNow = app.data.pageNow - 1;
-    searchData(Dom.id('search').value,app.data.pageNow,app.data.itemPerPage, app.data.filterBy, app.data.filter);
+    searchData(Dom.id('search').value,app.data.pageNow,app.data.itemPerPage, app.data.filterby, app.data.filter);
   }
 }
 
 // Set Filter By
 function setFilterBy(self) {
-  app.data.filterBy = parseInt(self.value);
-  if(app.data.filterBy > 0) {
+  Dom.id('onprogress').innerHTML = '';
+  app.data.table = [];
+  app.data.message = '';
+  app.data.filterby = parseInt(self.value);
+  if(app.data.filterby > 0) {
     Dom.id('filter').style.display = 'inline';
-    _setDataFilter(app.data.filterBy);
+    _setDataFilter(app.data.filterby);
   } else {
-    _clearDataFilter();
+    _clearDataFilter('filter');
     Dom.id('filter').style.display = 'none';
     app.data.filter = '';
+    app.data.filterby = '';
   }
 }
 
@@ -149,24 +151,69 @@ function setFilter(self) {
   app.data.filter = self.value;
 }
 
-function _clearDataFilter() {
-  var select = Dom.id("filter");
-  var length = select.options.length;
-  for (var i = 0; i < length; i++) {
-    select.options[i] = null;
+function _clearDataFilter(el) {
+  var i, L = Dom.id(el).options.length - 1;
+  for(i = L; i >= 0; i--) {
+    Dom.id(el).remove(i);
   }
+}
+
+function notReady() {
+  var onprogress = '<div class="row"><message class="warning">Fitur ini belum tersedia untuk saat ini!<br>Pencarian akan tetap mencari semua data.</message></div>';
+  Dom.id('onprogress').innerHTML = onprogress;
+  _clearDataFilter('filter');
+  Dom.id('filter').style.display = 'none';
+  app.data.filter = '';
 }
 
 function _setDataFilter(number) {
+  Dom.id('onprogress').innerHTML = '';
   switch(true) {
     case (number === 1) :
-        _getDataFilter('tahap');
-        break;
+      notReady();
+      break;
+    case (number === 2) :
+      notReady();
+      break;
+    case (number === 3) :
+      notReady();
+      break;
+    case (number === 4) :
+      _getDataFilter('tahap');
+      break;
+    default :
+      _clearDataFilter('filter');
+      Dom.id('filter').style.display = 'none';
+      app.data.filter = '';
   }
 }
 
+function _getDataFilterBy() {
+  _clearDataFilter('filterby');
+  var url = '@{CONF.baseUrl}/num/filterby';
+  ajax({
+    headers: {
+      'pbj-api-key':'ngupas@2020',
+      'content-type':'application/json'
+    }
+  })
+  .post(url, {filterbytypeid:1})
+  .then(function(response, xhr) {
+    if(response.sts_res === 'true' && response.data.length > 0) {
+      var opt = '<option value="">Semua</option>"';
+      for (var x=0; x<response.data.length; x++) {
+        opt += '<option value="'+response.data[x].filter_by_id+'">'+response.data[x].filter_by_name+'</option>';
+      }
+      Dom.append(Dom.id('filterby'),opt);
+    }
+  })
+  .catch(function(response, xhr){
+    console.log(xhr.responseText);
+  })
+}
+
 function _getDataFilter(name) {
-  _clearDataFilter();
+  _clearDataFilter('filter');
   var url = '@{CONF.baseUrl}/num/'+name;
   ajax({
     headers: {
@@ -192,13 +239,13 @@ function _getDataFilter(name) {
 // Go / Jump to page
 function jumpPage(self) {
   app.data.pageNow = parseInt(self.value);
-  searchData(Dom.id('search').value,app.data.pageNow,app.data.itemPerPage, app.data.filterBy, app.data.filter);
+  searchData(Dom.id('search').value,app.data.pageNow,app.data.itemPerPage, app.data.filterby, app.data.filter);
 }
 
 // Submit Search
 function submitSearch() {
   app.data.pageNow = 1;
-  searchData(Dom.id('search').value, app.data.pageNow, app.data.itemPerPage, app.data.filterBy, app.data.filter);
+  searchData(Dom.id('search').value, app.data.pageNow, app.data.itemPerPage, app.data.filterby, app.data.filter);
 }
 
 // Event listener when search box is entered
@@ -210,3 +257,4 @@ Dom.id('search').addEventListener('keyup', function(e) {
 
 // load data
 searchData(Dom.id('search').value,1,25,0,'');
+_getDataFilterBy();
