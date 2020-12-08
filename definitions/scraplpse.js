@@ -60,7 +60,14 @@ function inserturltender(type, url_tender_linknya,
         try {
             var modelsnya = require('../models/mdl_insert_url_tender');
 
-            url_tender_linknya = url_tender_linknya + '4';
+            url_tender_linknya = url_tender_linknya.replace('eproc4','').replace('eproc','');
+
+            if (url_tender_linknya.substring(url_tender_linknya.length-1, url_tender_linknya.length) == "/") {
+                url_tender_linknya = url_tender_linknya + 'eproc4';
+            } else {
+                url_tender_linknya = url_tender_linknya + '/eproc4';
+            }
+            
             var url_tender_link = url_tender_linknya + '/lelang';
 
             var url_second_level_domain = getHostName(url_tender_linknya);
@@ -71,7 +78,7 @@ function inserturltender(type, url_tender_linknya,
                 var url_second_level_domainnya = url_second_level_domain[1];
                 if (isNaN(url_second_level_domainnya)) {
                 } else {
-                    statusactiveidnya = 0;
+                    statusactiveidnya = 1;
                     url_second_level_domainnya = getHostName(url_tender_linknya);
                 }
             }
