@@ -70,3 +70,36 @@ function insertdttenderf(url_tender_idnya, url_tender_linknya, kodenya, nama_pak
 		}
 	});
 };
+
+exports.updatestatusurltender = function (url_tender_idnya, statusonnya) {
+	return new Promise(function(resolve, reject) {
+		var initializePromise = updatestatusurltender(url_tender_idnya, statusonnya); 
+		initializePromise.then(function() {
+			resolve();
+		}, function(err) {
+			console.log(err)
+			reject();
+		});
+	});
+};
+
+function updatestatusurltender(url_tender_idnya, statusonnya){
+	return new Promise(function(resolve, reject) {
+		var db = DBMS();
+		
+		try {
+			var utkinput = [url_tender_idnya, statusonnya];
+			db.query('UPDATE num_url_tender SET status_on = $2, modified_date = now() WHERE url_tender_id=$1 RETURNING *;', utkinput).callback(function(err, response) {
+				if (err) throw err;
+
+				if (response.length > 0) {
+					resolve();
+				} else {
+					reject();
+				}
+			});
+		} catch(err) {
+			reject(err);
+		}
+	});
+};
