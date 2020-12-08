@@ -75,7 +75,7 @@ function searchData(value, pagenow, itemperpage, filterby, filter) {
     katakunci:value,
     sortby:1,
     sortbyasc:0,
-    filterby:(filterby === '' || filterby === 0 ? []: [filterby]),
+    filterby:(filterby === '' || filterby === 0 || filterby === undefined || filterby === null ? []: [filterby]),
     filter:(filter.length > 0 ? [filter]: ['']),
     page:pagenow,
     limit:itemperpage
@@ -256,5 +256,5 @@ Dom.id('search').addEventListener('keyup', function(e) {
 });
 
 // load data
-searchData(Dom.id('search').value,1,25,0,'');
+searchData(Dom.id('search').value,1,25,'','');
 _getDataFilterBy();
