@@ -149,16 +149,18 @@ function setFilterBy(self) {
   app.data.message = '';
   app.data.filterby = parseInt(self.value);
   Dom.id('ifilter').style.display = 'none';
-  if(app.data.filterby > 0 && app.data.filterby !== 3) {
+  if(app.data.filterby > 0 && (app.data.filterby !== 3 && app.data.filterby !== 2) ) {
     Dom.id('filter').style.display = 'inline';
     _setDataFilter(app.data.filterby);
   } else {
     _clearDataFilter('filter');
     Dom.id('filter').style.display = 'none';
     app.data.filter = '';
-    if(app.data.filterby !== 3) {
+    if(app.data.filterby !== 3 && app.data.filterby !== 2) {
       app.data.filterby = '';
     } else {
+      if(app.data.filterby === 2) Dom.id('ifilter').placeholder = "Nama Instansi";
+      if(app.data.filterby === 3) Dom.id('ifilter').placeholder = "NPWP / Nama Perusahaan";
       Dom.id('ifilter').style.display = 'inline';
     }
   }
@@ -188,10 +190,11 @@ function _setDataFilter(number) {
   Dom.id('onprogress').innerHTML = '';
   switch(true) {
     case (number === 1) :
-      notReady('LPSE');
+      // notReady('LPSE');
+      _getDataFilterLPSE();
       break;
     case (number === 2) :
-      notReady('Instansi');
+      // Search by input text, doen't need any data from server
       break;
     case (number === 3) :
       // Search by input text, doen't need any data from server
@@ -254,6 +257,30 @@ function _getDataFilter(name) {
   })
 }
 
+function _getDataFilterLPSE() {
+  _clearDataFilter('filter');
+  var url = '@{CONF.baseUrl}/num/lpse';
+  ajax({
+    headers: {
+      'pbj-api-key':'ngupas@2020',
+      'content-type':'application/json'
+    }
+  })
+  .post(url, {})
+  .then(function(response, xhr) {
+    if(response.sts_res === 'true' && response.data.length > 0) {
+      var opt = '<option value="">Semua</option>"';
+      for (var x=0; x<response.data.length; x++) {
+        opt += '<option value="'+response.data[x].url_tender_id+'">'+response.data[x].url_second_level_domain+'</option>';
+      }
+      Dom.append(Dom.id('filter'),opt);
+    }
+  })
+  .catch(function(response, xhr){
+    console.log(xhr.responseText);
+  })
+}
+
 // Go / Jump to page
 function jumpPage(self) {
   app.data.pageNow = parseInt(self.value);
@@ -263,7 +290,7 @@ function jumpPage(self) {
 // Submit Search
 function submitSearch() {
   app.data.pageNow = 1;
-  if (Dom.id('ifilter').style.display) {
+  if (Dom.id('ifilter').style.display === 'inline') {
     app.data.filter = Dom.id('ifilter').value;
   }
   searchData(Dom.id('search').value, app.data.pageNow, app.data.itemPerPage, app.data.filterby, app.data.filter);
