@@ -71,6 +71,37 @@ function OpennumSortby(sortbytypeid, self, req, receivetime) {
 	});
 };
 
+exports.APIOpennumLPSE = function(self, req, receivetime){
+    var initializePromise = Opennumlpse(self, req, receivetime);
+    initializePromise.then(function() {
+        
+    }, function(err) {
+        console.log(err);
+        self.json(JSON.parse(BalikanHeaderFINAL("false", err, "error", "Perhatikan parameter yang dikirimkan.", JSON.stringify(req), receivetime, "", 0)));
+    });
+};
+
+function Opennumlpse(self, req, receivetime) {
+	return new Promise(function(resolve, reject) {
+		var db = DBMS();
+        
+		try {
+			db.query('SELECT url_tender_id, url_second_level_domain, url_tender_link FROM num_url_tender WHERE (status_active_id = 1) ORDER BY url_second_level_domain ASC').callback(function(err, response) {
+				if (err) throw err;
+
+				if (response.length > 0) {
+					self.json(JSON.parse(BalikanHeaderFINAL("true", "Berhasil buka data LPSE.", "", "Total semua data: " + response.length, JSON.stringify(req), receivetime, JSON.stringify(response), parseInt(response.length))));					
+					resolve("Berhasil buka LPSE.");
+				} else {
+					reject("Tidak ada data LPSE.");
+				}
+			});
+		} catch(err) {
+			reject(err);
+		}
+	});
+};
+
 exports.APIOpennumTahap = function(self, req, receivetime){
     var initializePromise = OpennumTahap(self, req, receivetime);
     initializePromise.then(function() {
