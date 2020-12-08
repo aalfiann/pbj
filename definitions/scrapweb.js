@@ -61,9 +61,9 @@ const getAuthenticityToken = async () => {
                         const totalPage = Math.ceil(totalRecords/itemPerPage);
                         let startPage = 0;
                         for (let i = 1; i <= totalPage; i++) {
-                            process.stdout.clearLine();
-                            process.stdout.cursorTo(0);
-                            process.stdout.write("link: "+ obj.data[jjj].url_tender_link + " --- halaman: " + i + " ");
+                            //process.stdout.clearLine();
+                            //process.stdout.cursorTo(0);
+                            //process.stdout.write("link: "+ obj.data[jjj].url_tender_link + " --- halaman: " + i + " ");
                             
                             startPage = ((i-1)*itemPerPage)
                             await page.goto(siteUrl(obj.data[jjj].url_tender_link_data, token, i, startPage, itemPerPage), {waitUntil: 'networkidle0'});

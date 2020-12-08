@@ -7,6 +7,8 @@ exports.install = function() {
 	ROUTE('POST /num/filterby/', error401, ['unauthorize', 25000]);
 	ROUTE('POST /num/tahap/', datatahap, ['authorize', 25000]);
 	ROUTE('POST /num/tahap/', error401, ['unauthorize', 25000]);
+	ROUTE('POST /num/lpse/', lpse, ['authorize', 25000]);
+	ROUTE('POST /num/lpse/', error401, ['unauthorize', 25000]);
 };
 
 function BalikanHeaderFINAL (stsres, stsdes, stsfal, note, req, receivetime, datanya, totalrecord) {
@@ -72,4 +74,24 @@ function filterby() {
 			modelnya.APIOpennumFilterby(self.model.filterbytypeid, self, self.model, receivetime);
 		}
 	}
+};
+
+function lpse() {
+	var tzoffset = (new Date()).getTimezoneOffset() * 60000;
+	var receivetime = (new Date(Date.now() - tzoffset)).toISOString().replace("T", " ").replace("Z", "");
+	
+	var modelnya = require('../models/mdl_num');
+	var self = this;
+
+	self.model = self.body;
+
+	// if (self.model.filterbytypeid === undefined) {
+	// 	self.json(JSON.parse(BalikanHeaderFINAL("false", "Invalid Parameter!", "invalidparameter", "Perhatikan parameter yang dikirimkan, ada yang kurang.", JSON.stringify(self.model), receivetime, "", 0)));
+	// } else {
+	// 	if (self.model.filterbytypeid === "") {
+	// 		self.json(JSON.parse(BalikanHeaderFINAL("false", "Parameter tidak boleh kosong.", "tidakbolehkosong", "Perhatikan parameter yang dikirimkan, ada yang tidak boleh kosong.", JSON.stringify(self.model), receivetime, "", 0)));
+	// 	} else {
+			modelnya.APIOpennumLPSE(self, self.model, receivetime);
+	// 	}
+	// }
 };
