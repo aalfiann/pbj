@@ -29,6 +29,7 @@ var app = new Reef('#app', {
             <th>Instansi</th>
             <th>Tahap</th>
             <th>HPS</th>
+            <th>Link</th>
             </tr>
         </thead>
         <tbody>
@@ -41,6 +42,7 @@ var app = new Reef('#app', {
                 <td data-label="Instansi">${item.instansi}</td>
                 <td data-label="Tahap">${item.tahap}</td>
                 <td data-label="HPS">${item.hps}</td>
+                <td data-label="Link"><a href="${item.url_tender_link}/${item.kode}/pengumumanlelang" target="_blank" rel="nofollow noopener">Cek Paket</a></td>
             </tr>`;
             }).join('')}
         </tbody>
@@ -163,8 +165,8 @@ function _clearDataFilter(el) {
   }
 }
 
-function notReady() {
-  var onprogress = '<div class="row"><message class="warning">Fitur ini belum tersedia untuk saat ini!<br>Pencarian akan tetap mencari semua data.</message></div>';
+function notReady(name) {
+  var onprogress = '<div class="row"><message class="warning">Fitur pencarian berdasarkan data '+name+' belum tersedia untuk saat ini!<br>Pencarian akan tetap mencari semua data.</message></div>';
   Dom.id('onprogress').innerHTML = onprogress;
   _clearDataFilter('filter');
   Dom.id('filter').style.display = 'none';
@@ -175,13 +177,13 @@ function _setDataFilter(number) {
   Dom.id('onprogress').innerHTML = '';
   switch(true) {
     case (number === 1) :
-      notReady();
+      notReady('LPSE');
       break;
     case (number === 2) :
-      notReady();
+      notReady('Instansi');
       break;
     case (number === 3) :
-
+      // Search by input text, doen't need any data from server
       break;
     case (number === 4) :
       _getDataFilter('tahap');
