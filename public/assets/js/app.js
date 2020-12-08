@@ -263,6 +263,13 @@ Dom.id('search').addEventListener('keyup', function(e) {
   }
 });
 
+// Event listener when ifilter box is entered
+Dom.id('ifilter').addEventListener('keyup', function(e) {
+  if (e.keyCode === 13) {
+    submitSearch();
+  }
+});
+
 // load data
 searchData(Dom.id('search').value,1,25,'','');
 _getDataFilterBy();
