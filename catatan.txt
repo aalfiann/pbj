@@ -1,10 +1,5 @@
-npm i total.js
-npm i puppeteer
-npm i moment
-npm i async
-npm i uuid
-npm install pg
-npm install dbms
+npm i total.js puppeteer moment async uuid pg dbms --save
+npm i @babel/cli @babel/core @babel/preset-env --save-dev
 
 =====================
 API Buka List Tender:

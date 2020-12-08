@@ -29,20 +29,23 @@ var app = new Reef('#app', {
             <th>Instansi</th>
             <th>Tahap</th>
             <th>HPS</th>
+            <th>Tanggal Update</th>
             <th>Link</th>
             </tr>
         </thead>
         <tbody>
             ${props.table.map(function(item, index) {
             var num = (index+1);
+            item.modified_date = item.modified_date.replaceAll('&#58;',':')
             return `<tr>
                 <td data-label="#">${num+((props.pageNow-1)*props.itemPerPage)}</td>
                 <td data-label="Kode">${item.kode}</td>
-                <td data-label="Nama Paket">${item.nama_paket}</td>
+                <td data-label="Nama Paket">${(item.tender_label) ? '<span class="badge badge-warning space-right">'+item.tender_label+'</span>': ''}${item.nama_paket}</td>
                 <td data-label="Instansi">${item.instansi}</td>
                 <td data-label="Tahap">${item.tahap}</td>
                 <td data-label="HPS">${item.hps}</td>
-                <td data-label="Link"><a href="${item.url_tender_link}/${item.kode}/pengumumanlelang" target="_blank" rel="nofollow noopener">Cek Paket</a></td>
+                <td data-label="Tanggal Update">${moment(item.modified_date).format('DD MMM YYYY HH:mm')}</td>
+                <td data-label="Link"><a href="${item.url_tender_link}/${item.kode}/pengumumanlelang" class="btn btn-b btn-sm smooth" target="_blank" rel="nofollow noopener">Cek Paket</a></td>
             </tr>`;
             }).join('')}
         </tbody>
@@ -57,12 +60,20 @@ var app = new Reef('#app', {
         </span>
         </div>`;
     } else {
-      return (props.message) ? '<div class="row"><message class="warning">'+props.message+'</message></div>' : '';
+      return (props.message) ? '<div class="row"><message class="danger">'+props.message+'</message></div>' : '';
     }
   }
 });
 
 app.render();
+
+// Replace All
+String.prototype.replaceAll = function(strReplace, strWith) {
+  // See http://stackoverflow.com/a/3561711/556609
+  var esc = strReplace.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+  var reg = new RegExp(esc, 'ig');
+  return this.replace(reg, strWith);
+};
 
 // Search Data
 function searchData(value, pagenow, itemperpage, filterby, filter) {
@@ -166,7 +177,7 @@ function _clearDataFilter(el) {
 }
 
 function notReady(name) {
-  var onprogress = '<div class="row"><message class="warning">Fitur pencarian berdasarkan data '+name+' belum tersedia untuk saat ini!<br>Pencarian akan tetap mencari semua data.</message></div>';
+  var onprogress = '<div class="row"><message class="danger">Fitur pencarian berdasarkan data '+name+' belum tersedia untuk saat ini!<br>Pencarian akan tetap mencari semua data.</message></div>';
   Dom.id('onprogress').innerHTML = onprogress;
   _clearDataFilter('filter');
   Dom.id('filter').style.display = 'none';
