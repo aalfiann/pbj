@@ -14,12 +14,6 @@ var app = new Reef('#app', {
   },
   template: function (props) {
     if(props.table.length > 0) {
-      // generate option for jump page
-      var tpage = '';
-      for (var i=1;i<=props.totalPage;i++) {
-        // if current i same as pagenow then add attribute selected
-        tpage += '<option '+(i === props.pageNow ? 'selected':'')+'>'+i+'</option>';
-      }
       return `<table class="table space-top">
         <thead>
             <tr>
@@ -54,7 +48,7 @@ var app = new Reef('#app', {
         <span class="pull-right" style="margin-top:10px;">Halaman ${props.pageNow} dari ${props.totalPage}</span>
         <span class="pull-left">
             Page 
-            <select id="jumpPage" onchange="jumpPage(this)" class="smooth space-left space-right">${tpage}</select>
+            <input id="jumpPage" type="number" class="smooth space-left space-right" value="${props.pageNow}"><span onclick="jumpPage()" class="btn btn-a btn-sm smooth space-right">GO</span>
             <button onclick="prevPage()" class="btn btn-sm smooth space-right"><i class="mdi mdi-arrow-left-bold space-right"></i> Prev</button>
             <button onclick="nextPage()" class="btn btn-sm smooth">Next <i class="mdi mdi-arrow-right-bold space-left"></i></button>
         </span>
@@ -282,8 +276,10 @@ function _getDataFilterLPSE() {
 }
 
 // Go / Jump to page
-function jumpPage(self) {
-  app.data.pageNow = parseInt(self.value);
+function jumpPage() {
+  app.data.pageNow = parseInt(Dom.id('jumpPage').value);
+  if(app.data.pageNow < 1) app.data.pageNow = 1;
+  if(app.data.pageNow > 1) app.data.pageNow = app.data.totalPage;
   searchData(Dom.id('search').value,app.data.pageNow,app.data.itemPerPage, app.data.filterby, app.data.filter);
 }
 
