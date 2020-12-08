@@ -135,14 +135,19 @@ function setFilterBy(self) {
   app.data.table = [];
   app.data.message = '';
   app.data.filterby = parseInt(self.value);
-  if(app.data.filterby > 0) {
+  Dom.id('ifilter').style.display = 'none';
+  if(app.data.filterby > 0 && app.data.filterby !== 3) {
     Dom.id('filter').style.display = 'inline';
     _setDataFilter(app.data.filterby);
   } else {
     _clearDataFilter('filter');
     Dom.id('filter').style.display = 'none';
     app.data.filter = '';
-    app.data.filterby = '';
+    if(app.data.filterby !== 3) {
+      app.data.filterby = '';
+    } else {
+      Dom.id('ifilter').style.display = 'inline';
+    }
   }
 }
 
@@ -176,7 +181,7 @@ function _setDataFilter(number) {
       notReady();
       break;
     case (number === 3) :
-      notReady();
+
       break;
     case (number === 4) :
       _getDataFilter('tahap');
@@ -245,6 +250,9 @@ function jumpPage(self) {
 // Submit Search
 function submitSearch() {
   app.data.pageNow = 1;
+  if (Dom.id('ifilter').style.display) {
+    app.data.filter = Dom.id('ifilter').value;
+  }
   searchData(Dom.id('search').value, app.data.pageNow, app.data.itemPerPage, app.data.filterby, app.data.filter);
 }
 
