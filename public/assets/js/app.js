@@ -279,7 +279,7 @@ function _getDataFilterLPSE() {
 function jumpPage() {
   app.data.pageNow = parseInt(Dom.id('jumpPage').value);
   if(app.data.pageNow < 1) app.data.pageNow = 1;
-  if(app.data.pageNow > 1) app.data.pageNow = app.data.totalPage;
+  if(app.data.pageNow > app.data.totalPage) app.data.pageNow = app.data.totalPage;
   searchData(Dom.id('search').value,app.data.pageNow,app.data.itemPerPage, app.data.filterby, app.data.filter);
 }
 
