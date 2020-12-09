@@ -285,6 +285,4 @@ Dom.id('ifilter').addEventListener('keyup', function (e) {
   }
 }); // load data
 
-searchData(Dom.id('search').value, 1, 25, '', '');
-
 _getDataFilterBy();
