@@ -153,7 +153,6 @@ function _setDataFilter(number) {
 
   switch (true) {
     case number === 1:
-      // notReady('LPSE');
       _getDataFilterLPSE();
 
       break;
@@ -168,6 +167,16 @@ function _setDataFilter(number) {
 
     case number === 4:
       _getDataFilter('tahap');
+
+      break;
+
+    case number === 5:
+      _getDataFilterKategori();
+
+      break;
+
+    case number === 6:
+      _getDataFilterHPS();
 
       break;
 
@@ -244,6 +253,54 @@ function _getDataFilterLPSE() {
 
       for (var x = 0; x < response.data.length; x++) {
         opt += '<option value="' + response.data[x].url_tender_id + '">' + response.data[x].url_second_level_domain + '</option>';
+      }
+
+      Dom.append(Dom.id('filter'), opt);
+    }
+  })["catch"](function (response, xhr) {
+    console.log(xhr.responseText);
+  });
+}
+
+function _getDataFilterKategori() {
+  _clearDataFilter('filter');
+
+  var url = '@{CONF.baseUrl}/num/kategori';
+  ajax({
+    headers: {
+      'pbj-api-key': 'ngupas@2020',
+      'content-type': 'application/json'
+    }
+  }).post(url, {}).then(function (response, xhr) {
+    if (response.sts_res === 'true' && response.data.length > 0) {
+      var opt = '';
+
+      for (var x = 0; x < response.data.length; x++) {
+        opt += '<option value="' + response.data[x].kategori_id + '">' + response.data[x].kategori + '</option>';
+      }
+
+      Dom.append(Dom.id('filter'), opt);
+    }
+  })["catch"](function (response, xhr) {
+    console.log(xhr.responseText);
+  });
+}
+
+function _getDataFilterHPS() {
+  _clearDataFilter('filter');
+
+  var url = '@{CONF.baseUrl}/num/hps';
+  ajax({
+    headers: {
+      'pbj-api-key': 'ngupas@2020',
+      'content-type': 'application/json'
+    }
+  }).post(url, {}).then(function (response, xhr) {
+    if (response.sts_res === 'true' && response.data.length > 0) {
+      var opt = '';
+
+      for (var x = 0; x < response.data.length; x++) {
+        opt += '<option value="' + response.data[x].hps_id + '">' + response.data[x].hps + '</option>';
       }
 
       Dom.append(Dom.id('filter'), opt);
