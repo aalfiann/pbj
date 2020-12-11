@@ -5,6 +5,68 @@ function BalikanHeaderFINAL (stsres, stsdes, stsfal, note, req, receivetime, dat
 	return teksnya;
 };
 
+exports.APIOpennumHPS = function(self, req, receivetime){
+    var initializePromise = OpennumHPS(self, req, receivetime);
+    initializePromise.then(function() {
+        
+    }, function(err) {
+        console.log(err);
+        self.json(JSON.parse(BalikanHeaderFINAL("false", err, "error", "Perhatikan parameter yang dikirimkan.", JSON.stringify(req), receivetime, "", 0)));
+    });
+};
+
+function OpennumHPS(self, req, receivetime) {
+	return new Promise(function(resolve, reject) {
+		var db = DBMS();
+        
+		try {
+			db.query('SELECT * FROM num_hps ORDER BY no_urut ASC').callback(function(err, response) {
+				if (err) throw err;
+
+				if (response.length > 0) {
+					self.json(JSON.parse(BalikanHeaderFINAL("true", "Berhasil buka data HPS.", "", "Total semua data: " + response.length, JSON.stringify(req), receivetime, JSON.stringify(response), parseInt(response.length))));					
+					resolve("Berhasil buka HPS.");
+				} else {
+					reject("Tidak ada data HPS.");
+				}
+			});
+		} catch(err) {
+			reject(err);
+		}
+	});
+};
+
+exports.APIOpennumKategori = function(self, req, receivetime){
+    var initializePromise = OpennumKategori(self, req, receivetime);
+    initializePromise.then(function() {
+        
+    }, function(err) {
+        console.log(err);
+        self.json(JSON.parse(BalikanHeaderFINAL("false", err, "error", "Perhatikan parameter yang dikirimkan.", JSON.stringify(req), receivetime, "", 0)));
+    });
+};
+
+function OpennumKategori(self, req, receivetime) {
+	return new Promise(function(resolve, reject) {
+		var db = DBMS();
+        
+		try {
+			db.query('SELECT * FROM num_kategori ORDER BY no_urut ASC').callback(function(err, response) {
+				if (err) throw err;
+
+				if (response.length > 0) {
+					self.json(JSON.parse(BalikanHeaderFINAL("true", "Berhasil buka data kategori.", "", "Total semua data: " + response.length, JSON.stringify(req), receivetime, JSON.stringify(response), parseInt(response.length))));					
+					resolve("Berhasil buka kategori.");
+				} else {
+					reject("Tidak ada data kategori.");
+				}
+			});
+		} catch(err) {
+			reject(err);
+		}
+	});
+};
+
 exports.APIOpennumFilterby = function(filterbytypeid, self, req, receivetime){
     var initializePromise = OpennumFilterby(filterbytypeid, self, req, receivetime);
     initializePromise.then(function() {
@@ -86,7 +148,7 @@ function Opennumlpse(self, req, receivetime) {
 		var db = DBMS();
         
 		try {
-			db.query('SELECT url_tender_id, url_second_level_domain, url_tender_link FROM num_url_tender WHERE (status_active_id = 1) ORDER BY url_second_level_domain ASC').callback(function(err, response) {
+			db.query('SELECT url_tender_id, url_second_level_domain, url_tender_link FROM num_url_tender WHERE (status_active_id = 1 AND status_on = 1) ORDER BY url_second_level_domain ASC').callback(function(err, response) {
 				if (err) throw err;
 
 				if (response.length > 0) {

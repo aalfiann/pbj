@@ -3,11 +3,14 @@ exports.install = function() {
     //ROUTE('/bukapostgresql', bukapostgresql);
     //ROUTE('/insertpostgresql', insertpostgresql);
 
-    //ROUTE('/scrapwebpengumuman', scrapwebpengumuman);
+    ROUTE('/scrapwebpengumuman', scrapwebpengumuman);
+    ROUTE('/scrapwebpemenang', scrapwebpemenang);
 
     ROUTE('/scraplpse', scraplpse);
     ROUTE('/scrapweb', scrapweb);
     ROUTE('/scrapwebpeserta', scrapwebpeserta);
+
+    ROUTE('/scrapwebtender', scrapwebtender);
 };
 
 function urltender() {
@@ -24,6 +27,11 @@ function urltender() {
     }, function(err) {
         console.log(err);
     });
+};
+
+function scrapwebtender() {
+    var scrapwebnya = require('../definitions/scrapwebtender');
+	scrapwebnya.runScrapper();
 };
 
 function scrapweb() {
@@ -44,6 +52,11 @@ function scrapwebpengumuman() {
 function scrapwebpeserta() {
     var scrapwebpesertanya = require('../definitions/scrapwebpeserta');
 	scrapwebpesertanya.getWebPeserta();
+};
+
+function scrapwebpemenang() {
+    var scrapwebpemenangnya = require('../definitions/scrapwebpemenang');
+	scrapwebpemenangnya.getWebPemenang();
 };
 
 function bukapostgresql() {
