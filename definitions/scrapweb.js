@@ -36,8 +36,8 @@ const getAuthenticityToken = async () => {
 	var receivetime = (new Date(Date.now() - tzoffset)).toISOString().replace("T", " ").replace("Z", "");
 	
     var waktumulaiINSERT = new Date();
+    const browser = await puppeteer.launch({args:['--no-sandbox']});
     //const browser = await puppeteer.launch({args:['--no-sandbox']});
-    const browser = await puppeteer.launch();
     const page = await browser.newPage();
 
     var obj = await dataurlTender("lpse", "", receivetime); 

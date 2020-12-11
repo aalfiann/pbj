@@ -31,11 +31,11 @@ function OpenListTender(katakunci, sortby, sortbyasc, filterby, filter, page, li
             var utkinput = [1];
             var sambungwhere = "WHERE (dt_tender.status_active_id = $1) ";
             if (katakunci != undefined && katakunci != null && katakunci != '') {
-                katakunci =  "%" + katakunci + "%";
+                katakunci =  "%" + katakunci.toLowerCase() + "%";
                 utkinput =  [1, katakunci];
                 sambungwhere = sambungwhere + "AND ((dt_tender.kode like $2) OR (dt_tender.nama_paket like $2) OR (dt_tender.tender_label like $2) OR (dt_tender.instansi like $2) OR (dt_tender.tahap like $2) OR (dt_tender.kategori like $2) OR (dt_tender.sistem_pengadaan like $2) OR (dt_tender.tahun_anggaran like $2) OR (dt_tender.nilai_kontrak like $2)) ";
             } else {
-                katakunci =  "%" + katakunci + "%";
+                katakunci =  "%" + katakunci.toLowerCase() + "%";
                 utkinput =  [1, katakunci];
                 sambungwhere = sambungwhere + "AND (dt_tender.kode like $2) ";
             }
@@ -69,15 +69,33 @@ function OpenListTender(katakunci, sortby, sortbyasc, filterby, filter, page, li
                     for (var i=0;i<filterby.length;i++) {
                         nilaiparam = i+3;
                         if (filterby[i] == 1) {
-                            sambungwhere = sambungwhere + "AND (dt_tender.url_tender_id like $" + nilaiparam + ") ";
+                            sambungwhere = sambungwhere + "AND (LOWER(dt_tender.url_tender_id) like $" + nilaiparam + ") ";
+                            utkinput.push('%'+ filter[i] + '%');
                         } else if (filterby[i] == 2) {
-                            sambungwhere = sambungwhere + "AND (dt_tender.instansi like $" + nilaiparam + ") ";
+                            sambungwhere = sambungwhere + "AND (LOWER(dt_tender.instansi) like $" + nilaiparam + ") ";
+                            utkinput.push('%'+ filter[i] + '%');
                         } else if (filterby[i] == 3) {
-                            sambungwhere = sambungwhere + "AND ((dt_tender_peserta.nama_peserta like $" + nilaiparam + ") OR (dt_tender_peserta.npwp like $" + nilaiparam +")) ";
+                            sambungwhere = sambungwhere + "AND ((LOWER(dt_tender_peserta.nama_peserta) like $" + nilaiparam + ") OR (LOWER(REPLACE(REPLACE(dt_tender_peserta.npwp,'.',''),'-','')) like $" + nilaiparam +")) ";
+                            utkinput.push('%'+ filter[i] + '%');
                         } else if (filterby[i] == 4) {
-                            sambungwhere = sambungwhere + "AND (dt_tender.tahap like $" + nilaiparam + ") ";
+                            sambungwhere = sambungwhere + "AND (LOWER(dt_tender.tahap) like $" + nilaiparam + ") ";
+                            utkinput.push('%'+ filter[i] + '%');
+                        } else if (filterby[i] == 5) {
+                            sambungwhere = sambungwhere + "AND (LOWER(dt_tender.kategori) like $" + nilaiparam + ") ";
+                            utkinput.push('%'+ filter[i] + '%');
+                        } else if (filterby[i] == 6) {
+                            if (filter[i].toString() == '2') {
+                                sambungwhere = sambungwhere + "AND (dt_tender.hps_terjemahan <= 2500000000) ";
+                            } else if (filter[i].toString() == '3') {
+                                sambungwhere = sambungwhere + "AND (dt_tender.hps_terjemahan > 2500000000 AND dt_tender.hps_terjemahan <= 10000000000) ";
+                            } else if (filter[i].toString() == '4') {
+                                sambungwhere = sambungwhere + "AND (dt_tender.hps_terjemahan > 10000000000 AND dt_tender.hps_terjemahan <= 50000000000) ";
+                            } else if (filter[i].toString() == '5') {
+                                sambungwhere = sambungwhere + "AND (dt_tender.hps_terjemahan > 50000000000 AND dt_tender.hps_terjemahan <= 100000000000) ";
+                            } else if (filter[i].toString() == '6') {
+                                sambungwhere = sambungwhere + "AND (dt_tender.hps_terjemahan > 100000000000) ";
+                            }
                         }
-                        utkinput.push('%'+ filter[i] + '%');
                     }
                 } else {
                     reject("Filter by tidak bisa lebih besar dari Filter.");

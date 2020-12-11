@@ -19,6 +19,8 @@ function insertdttenderpeserta(tender_id, no, nama_peserta,
 		var db = DBMS();
 		
 		try {
+			var harga_penawarannya = 0;
+			var harga_terkoreksinya = 0;
 			var nonya = no;
 			if (nonya == undefined) {
 				nonya = 1;
@@ -37,17 +39,11 @@ function insertdttenderpeserta(tender_id, no, nama_peserta,
 			} else {
 				npwpnya = npwp.trim();
 			}
-			var harga_penawarannya = harga_penawaran;
-			if (harga_penawarannya == undefined) {
-				harga_penawarannya = "";
-			} else {
-				harga_penawarannya = harga_penawaran.trim();
+			if (harga_penawaran != undefined && harga_penawaran != null && harga_penawaran.trim() != '') {
+				harga_penawarannya = harga_penawaran.replace(/Rp/g,'').replace(/RP/g,'').replace(/rp/g,'').replace(/\./g,'').replace(/,/g,'.').trim();
 			}
-			var harga_terkoreksinya = harga_terkoreksi;
-			if (harga_terkoreksinya == undefined) {
-				harga_terkoreksinya = "";
-			} else {
-				harga_terkoreksinya = harga_terkoreksi.trim();
+			if (harga_terkoreksi != undefined && harga_terkoreksi != null && harga_terkoreksi.trim() != '') {
+				harga_terkoreksinya = harga_terkoreksi.replace(/Rp/g,'').replace(/RP/g,'').replace(/rp/g,'').replace(/\./g,'').replace(/,/g,'.').trim();
 			}
 			var utkinput = [uuidv4(), tender_id, nonya, nama_pesertanya, npwpnya, harga_penawarannya, harga_terkoreksinya];
 	

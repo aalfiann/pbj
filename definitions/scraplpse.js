@@ -29,7 +29,7 @@ async function parseHtml(html) {
 };
 
 const getLpseURL = async () => {
-    const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch({args:['--no-sandbox']});
     const page = await browser.newPage();
 
     await page.goto('http://inaproc.id/lpse', { waitUntil: 'networkidle0' });
@@ -41,6 +41,24 @@ const getLpseURL = async () => {
 
 module.exports = {
     getLpseURL
+};
+
+function getHostName(url) {
+    var match = url.match(/:\/\/(www[0-9]?\.)?(.[^/:]+)/i);
+    if (match != null && match.length > 2 && typeof match[2] === 'string' && match[2].length > 0) {
+    return match[2];
+    }
+    else {
+        return null;
+    }
+};
+
+function hitungwaktu(judulnya, waktumulai) {
+    var waktuselesai = new Date();
+    console.log("===" + judulnya + "===");
+    var durasimsnya = Math.abs(waktuselesai.getTime() - waktumulai.getTime());
+    var durasidetiknya = durasimsnya / 1000;
+    console.log("Durasi: " + durasimsnya + " ms (" + durasidetiknya + " s)");
 };
 
 //DATABASE
@@ -94,22 +112,4 @@ function inserturltender(type, url_tender_linknya,
             reject(err);
         }
     });
-};
-
-function getHostName(url) {
-    var match = url.match(/:\/\/(www[0-9]?\.)?(.[^/:]+)/i);
-    if (match != null && match.length > 2 && typeof match[2] === 'string' && match[2].length > 0) {
-    return match[2];
-    }
-    else {
-        return null;
-    }
-};
-
-function hitungwaktu(judulnya, waktumulai) {
-    var waktuselesai = new Date();
-    console.log("===" + judulnya + "===");
-    var durasimsnya = Math.abs(waktuselesai.getTime() - waktumulai.getTime());
-    var durasidetiknya = durasimsnya / 1000;
-    console.log("Durasi: " + durasimsnya + " ms (" + durasidetiknya + " s)");
 };

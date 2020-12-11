@@ -40,7 +40,7 @@ const getWebPeserta = async () => {
     var tzoffset = (new Date()).getTimezoneOffset() * 60000;
 	var receivetime = (new Date(Date.now() - tzoffset)).toISOString().replace("T", " ").replace("Z", "");
 	
-    const browser = await puppeteer.launch();
+    const browser = await puppeteer.launch({args:['--no-sandbox']});
     const page = await browser.newPage();
     var obj = await dataTender("", receivetime); 
 

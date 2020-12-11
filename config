@@ -17,8 +17,8 @@ baseAssetsUrl                   : http://localhost:8000
 siteName                        : PBJ
 
 //DATABASE
-database                      : postgres://postgres:kosong@localhost:5432/pbj
-//database                        : postgres://postgres:P0stgre123@103.65.237.138:31310/pbj
+//database                      : postgres://postgres:kosong@localhost:5432/pbj
+database                        : postgres://postgres:P0stgre123@103.65.237.138:31310/pbj
 
 // ROW TENDER
 row_ambil                       : 100
