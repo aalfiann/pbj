@@ -68,21 +68,23 @@ function OpenListTender(katakunci, sortby, sortbyasc, filterby, filter, page, li
                     var nilaiparam = 0;
                     for (var i=0;i<filterby.length;i++) {
                         nilaiparam = i+3;
+                        console.log(filterby[i]);
+                        console.log(filter[i]);
                         if (filterby[i] == 1) {
                             sambungwhere = sambungwhere + "AND (LOWER(dt_tender.url_tender_id) like $" + nilaiparam + ") ";
-                            utkinput.push('%'+ filter[i] + '%');
+                            utkinput.push('%'+ filter[i].toLowerCase() + '%');
                         } else if (filterby[i] == 2) {
                             sambungwhere = sambungwhere + "AND (LOWER(dt_tender.instansi) like $" + nilaiparam + ") ";
-                            utkinput.push('%'+ filter[i] + '%');
+                            utkinput.push('%'+ filter[i].toLowerCase() + '%');
                         } else if (filterby[i] == 3) {
                             sambungwhere = sambungwhere + "AND ((LOWER(dt_tender_peserta.nama_peserta) like $" + nilaiparam + ") OR (LOWER(REPLACE(REPLACE(dt_tender_peserta.npwp,'.',''),'-','')) like $" + nilaiparam +")) ";
-                            utkinput.push('%'+ filter[i] + '%');
+                            utkinput.push('%'+ filter[i].toLowerCase() + '%');
                         } else if (filterby[i] == 4) {
                             sambungwhere = sambungwhere + "AND (LOWER(dt_tender.tahap) like $" + nilaiparam + ") ";
-                            utkinput.push('%'+ filter[i] + '%');
+                            utkinput.push('%'+ filter[i].toLowerCase() + '%');
                         } else if (filterby[i] == 5) {
                             sambungwhere = sambungwhere + "AND (LOWER(dt_tender.kategori) like $" + nilaiparam + ") ";
-                            utkinput.push('%'+ filter[i] + '%');
+                            utkinput.push('%'+ filter[i].toLowerCase() + '%');
                         } else if (filterby[i] == 6) {
                             if (filter[i].toString() == '2') {
                                 sambungwhere = sambungwhere + "AND (dt_tender.hps_terjemahan <= 2500000000) ";
