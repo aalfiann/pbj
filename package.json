@@ -24,7 +24,8 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "convert": "babel public/assets/js/app.js --out-file public/assets/js/app-es5.js"
+    "convert": "babel public/assets/js/app.js --out-file public/assets/js/app-es5.js",
+    "convert-search": "babel public/assets/js/searchlpjk.js --out-file public/assets/js/searchlpjk-es5.js"
   },
   "keywords": [
     "lpse",
