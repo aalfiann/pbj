@@ -1,6 +1,7 @@
 const puppeteer = require('puppeteer');
 
 var itemPerPage = CONF.row_ambil;
+var pagepartial = CONF.page_partial;
 
 function siteUrl(linkdata, token, page = 1, start = 0, itemPerPage = 25) {
     var linkdatanya = linkdata + '?draw='+page+'&columns[0][data]=0&columns[0][name]=&columns[0][searchable]=true&columns[0][orderable]=true&columns[0][search][value]=&columns[0][search][regex]=false&columns[1][data]=1&columns[1][name]=&columns[1][searchable]=true&columns[1][orderable]=true&columns[1][search][value]=&columns[1][search][regex]=false&columns[2][data]=2&columns[2][name]=&columns[2][searchable]=true&columns[2][orderable]=true&columns[2][search][value]=&columns[2][search][regex]=false&columns[3][data]=3&columns[3][name]=&columns[3][searchable]=false&columns[3][orderable]=false&columns[3][search][value]=&columns[3][search][regex]=false&columns[4][data]=4&columns[4][name]=&columns[4][searchable]=true&columns[4][orderable]=true&columns[4][search][value]=&columns[4][search][regex]=false&order[0][column]=0&order[0][dir]=desc&start='+start+'&length='+itemPerPage+'&search[value]=&search[regex]=false&authenticityToken='+token+'&_='+Date.now();
@@ -38,7 +39,6 @@ const getAuthenticityToken = async () => {
     
     var waktumulaiINSERT = new Date();
     const browser = await puppeteer.launch({args:['--no-sandbox']});
-    //const browser = await puppeteer.launch();
     const page = await browser.newPage();
 
     var obj = await dataurlTender("lpse", "", receivetime); 
@@ -59,7 +59,10 @@ const getAuthenticityToken = async () => {
                         if (obj.data[jjj].row_yang_diambil_per > 0 && obj.data[jjj].row_yang_diambil_per != undefined && obj.data[jjj].row_yang_diambil_per != '') {
                             itemPerPage = obj.data[jjj].row_yang_diambil_per;
                         }
-                        const totalPage = Math.ceil(totalRecords/itemPerPage);
+                        var totalPage = Math.ceil(totalRecords/itemPerPage);
+                        if (pagepartial > 0) {
+                            totalPage = pagepartial;
+                        }
                         let startPage = 0;
                         for (let i = 1; i <= totalPage; i++) {
                             //process.stdout.clearLine();

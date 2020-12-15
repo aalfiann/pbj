@@ -5,6 +5,8 @@ exports.install = function() {
 
     ROUTE('/scrapwebpengumuman', scrapwebpengumuman);
     ROUTE('/scrapwebpemenang', scrapwebpemenang);
+    ROUTE('/repairhpsterjemahan', repairhpsterjemahan);
+    ROUTE('/scraplpjk', scraplpjk);
 
     ROUTE('/scraplpse', scraplpse);
     ROUTE('/scrapweb', scrapweb);
@@ -27,6 +29,16 @@ function urltender() {
     }, function(err) {
         console.log(err);
     });
+};
+
+function repairhpsterjemahan() {
+    var repairhpsterjemahannya = require('../definitions/repairhpsterjemahan');
+	repairhpsterjemahannya.AutoRepairHPSTerjemahan();
+};
+
+function scraplpjk() {
+    var scraplpjknya = require('../definitions/scraplpjk');
+	scraplpjknya.ambilDetailSBU();
 };
 
 function scrapwebtender() {
