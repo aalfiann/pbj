@@ -1,4 +1,4 @@
-npm i total.js puppeteer moment async uuid pg dbms --save
+npm i total.js puppeteer puppeteer-core moment async uuid pg dbms dom-parser follow-redirects querystring sync-loop unirest --save
 npm i @babel/cli @babel/core @babel/preset-env --save-dev
 
 =====================
@@ -24,3 +24,5 @@ filterby: dan filter: belum ada.
 
 page: dan limit: untuk pagination (jika diperlukan, dan sudah bisa dicoba)
 =====================
+
+https://docs.google.com/spreadsheets/d/1pjJAASWLBp-kkPoqHVvi0lqxejPNLiPBu6hGCgdrxUI/edit#gid=958531626
