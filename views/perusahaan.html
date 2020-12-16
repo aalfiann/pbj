@@ -1,0 +1,30 @@
+@{title('Pencarian dari Data Perusahaan')}
+
+@{section meta}
+@{view('partial-meta')}
+@{end}
+@{section menu}
+@{view('partial-menu')}
+@{end}
+
+<div class="container">
+    <h1>Pencarian dari Data Perusahaan</h1>
+    <p>
+        Cari data perusahaan :
+    </p>
+
+    <select id="filterby" onchange="setFilterBy(this)" class="smooth space-right"></select>
+    <input id="ifilter" type="text" class="smooth space-right" placeholder="Input disini...">
+    <input id="search" type="text" style="width:50%;" class="smooth" placeholder="input kata kunci & enter"><span class="addon" onclick="submitSearch()" title="Pencarian"><i class="mdi mdi-magnify"></i></span>
+    <div id ="onprogress"></div>
+    <div id="app"></div>
+</div>
+
+@{section footer}
+@{view('partial-footer')}
+@{end}
+
+@{section js}
+@{view('partial-js')}
+<script type="text/javascript" src="@{CONF.baseAssetsUrl}/assets/js/perusahaan.js"></script>
+@{end}

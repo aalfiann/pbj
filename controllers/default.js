@@ -1,6 +1,7 @@
 exports.install = function () {
 	// CORS('/search/*', ['get', 'post', 'put', 'delete'], true);
 	ROUTE('/', view_index);
+	ROUTE('/perusahaan', view_perusahaan);
 	ROUTE('/search', cari_lpjk);
 	ROUTE('POST /search/viewdata/', databu, ['json']);
 
@@ -11,6 +12,10 @@ exports.install = function () {
 function view_index() {
 	var self = this;
 	self.view('index');
+}
+function view_perusahaan() {
+	var self = this;
+	self.view('perusahaan');
 }
 function cari_lpjk() {
 	var self = this;
