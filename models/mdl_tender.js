@@ -76,7 +76,7 @@ function OpenListTender(katakunci, sortby, sortbyasc, filterby, filter, page, li
                             utkinput.push('%'+ filter[i].toLowerCase() + '%');
                         } else if (filterby[i] == 3) {
                             sambungwhere = sambungwhere + "AND ((LOWER(dt_tender_peserta.nama_peserta) like $" + nilaiparam + ") OR (LOWER(REPLACE(REPLACE(dt_tender_peserta.npwp,'.',''),'-','')) like $" + nilaiparam +")) ";
-                            utkinput.push('%'+ filter[i].toLowerCase() + '%');
+                            utkinput.push('%'+ filter[i].toLowerCase().replace(/\./g,'').replace(/-/g,'') + '%');
                         } else if (filterby[i] == 4) {
                             sambungwhere = sambungwhere + "AND (LOWER(dt_tender.tahap) like $" + nilaiparam + ") ";
                             utkinput.push('%'+ filter[i].toLowerCase() + '%');

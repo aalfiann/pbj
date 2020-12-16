@@ -34,7 +34,7 @@ function OpenPerusahaan(katakunci, sortby, sortbyasc, filterby, filter, page, li
             if (katakunci != undefined && katakunci != null && katakunci != '') {
                 katakunci =  "%" + katakunci.toLowerCase() + "%";
                 utkinput =  ['', katakunci];
-                sambungwhere = sambungwhere + "AND ((dt_tender_peserta.nama_peserta like $2) OR (LOWER(REPLACE(REPLACE(dt_tender_peserta.npwp,'.',''),'-','')) like $2)) ";
+                sambungwhere = sambungwhere + "AND ((dt_tender_peserta.nama_peserta like $2) OR (LOWER(REPLACE(REPLACE(dt_tender_peserta.npwp,'.',''),'-','')) like $2) OR (dt_badan_usaha.bu_alamat like $2) OR (dt_badan_usaha.bu_kabupaten like $2) OR (dt_badan_usaha.bu_telepon like $2) OR (dt_badan_usaha.bu_email like $2) OR (dt_badan_usaha.bu_website like $2) OR (dt_badan_usaha.bu_bentuk_badan_usaha like $2) OR (dt_badan_usaha.bu_jenis_badan_usaha like $2)) ";
             } else {
                 katakunci =  "%" + katakunci.toLowerCase() + "%";
                 utkinput =  ['', katakunci];
@@ -66,7 +66,7 @@ function OpenPerusahaan(katakunci, sortby, sortbyasc, filterby, filter, page, li
                             utkinput.push('%'+ filter[i].toLowerCase() + '%');
                         } else if (filterby[i] == 8) {
                             sambungwhere = sambungwhere + "AND (LOWER(REPLACE(REPLACE(dt_tender_peserta.npwp,'.',''),'-','')) like $" + nilaiparam + ") ";
-                            utkinput.push('%'+ filter[i].toLowerCase() + '%');
+                            utkinput.push('%'+ filter[i].toLowerCase().replace(/\./g,'').replace(/-/g,'') + '%');
                         }
                     }
                 } else {
@@ -105,10 +105,10 @@ function OpenPerusahaan(katakunci, sortby, sortbyasc, filterby, filter, page, li
                         self.json(JSON.parse(BalikanHeaderFINAL("true", "Berhasil buka data perusahaan.", "", "Total semua data: " + jumlahdata, JSON.stringify(req), receivetime, JSON.stringify(buatjson), jumlahdata)));					
                         resolve("Berhasil buka data perusahaan.");
                     } else {
-                        reject("Tidak ada data tender.");
+                        reject("Tidak ada data perusahaan.");
                     }
                 } else {
-                    reject("Tidak ada data tender.");
+                    reject("Tidak ada data perusahaan.");
                 }
         });
 		} catch(err) {

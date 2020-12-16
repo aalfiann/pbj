@@ -139,7 +139,6 @@ async function parseHtml(strHtml) {
     } else {
         return "";
     }
-    
 };
 
 async function parseKualifikasiDanKlasifikasi(strData) {
