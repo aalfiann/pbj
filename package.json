@@ -7,10 +7,12 @@
     "async": "^3.2.0",
     "dbms": "^0.8.7",
     "dom-parser": "^0.1.6",
+    "follow-redirects": "^1.13.0",
     "moment": "^2.29.1",
     "pg": "^8.5.1",
     "puppeteer": "^5.5.0",
     "puppeteer-core": "^5.5.0",
+    "querystring": "^0.2.0",
     "sync-loop": "^0.1.1",
     "total.js": "^3.4.6",
     "unirest": "^0.6.0",
@@ -23,7 +25,8 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "convert": "babel public/assets/js/app.js --out-file public/assets/js/app-es5.js"
+    "convert": "babel public/assets/js/app.js --out-file public/assets/js/app-es5.js",
+    "convert-search": "babel public/assets/js/searchlpjk.js --out-file public/assets/js/searchlpjk-es5.js"
   },
   "keywords": [
     "lpse",
