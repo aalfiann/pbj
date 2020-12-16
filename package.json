@@ -6,6 +6,7 @@
   "dependencies": {
     "async": "^3.2.0",
     "dbms": "^0.8.7",
+    "dom-parser": "^0.1.6",
     "follow-redirects": "^1.13.0",
     "moment": "^2.29.1",
     "pg": "^8.5.1",

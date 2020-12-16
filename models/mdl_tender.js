@@ -68,8 +68,6 @@ function OpenListTender(katakunci, sortby, sortbyasc, filterby, filter, page, li
                     var nilaiparam = 0;
                     for (var i=0;i<filterby.length;i++) {
                         nilaiparam = i+3;
-                        console.log(filterby[i]);
-                        console.log(filter[i]);
                         if (filterby[i] == 1) {
                             sambungwhere = sambungwhere + "AND (LOWER(dt_tender.url_tender_id) like $" + nilaiparam + ") ";
                             utkinput.push('%'+ filter[i].toLowerCase() + '%');

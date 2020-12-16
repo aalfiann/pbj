@@ -33,7 +33,7 @@ function insertdttenderf(tender_id, url_tender_idnya, url_tender_linknya, kodeny
 					} else if (hpsnya.toLowerCase().search("t") != -1) {
 						buattambahnol = "000000000000";
 					}
-					if (hpsnya.toLowerCase().search(",") >= 0 || hpsnya.toLowerCase().search(".") >= 0) {
+					if (hpsnya.toLowerCase().search(",") > 0 || hpsnya.toLowerCase().search(".") > 0) {
 						buattambahnol = buattambahnol.substr(0,buattambahnol.length-1);
 					}
 					hps_terjemahan = hpsnya.toLowerCase().replace(',','').replace('.','').replace('rb','').replace('jt','').replace('m','').replace('t','').replace('j','').replace(' ','');
