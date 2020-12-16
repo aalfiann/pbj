@@ -37,16 +37,16 @@ var app = new Reef('#app', {
               return `<tr>
                   <td data-label="#">${num+((props.pageNow-1)*props.itemPerPage)}</td>
                   <td data-label="NPWP">${item.npwp}</td>
-                  <td data-label="Nama Perusahaan">${item.bu_nama}</td>
-                  <td data-label="Alamat">${item.bu_alamat}</td>
-                  <td data-label="Kabupaten">${item.bu_kabupaten}</td>
-                  <td data-label="Kodepos">${item.bu_kodepos}</td>
-                  <td data-label="Telepon">${item.bu_telepon}</td>
-                  <td data-label="Fax">${item.bu_fax}</td>
-                  <td data-label="Email">${item.bu_email}</td>
-                  <td data-label="Website">${item.bu_website}</td>
-                  <td data-label="Bentuk Usaha">${item.bu_bentuk_badan_usaha}</td>
-                  <td data-label="Jenis Usaha">${item.bu_jenis_badan_usaha}</td>
+                  <td data-label="Nama Perusahaan">${(item.bu_nama) ? item.bu_nama: '-'}</td>
+                  <td data-label="Alamat">${(item.bu_alamat)?item.bu_alamat:'-'}</td>
+                  <td data-label="Kabupaten">${(item.bu_kabupaten)?item.bu_kabupaten:'-'}</td>
+                  <td data-label="Kodepos">${(item.bu_kodepos)?item.bu_kodepos:'-'}</td>
+                  <td data-label="Telepon">${(item.bu_telepon)?item.bu_telepon:'-'}</td>
+                  <td data-label="Fax">${(item.bu_fax)?item.bu_fax:'-'}</td>
+                  <td data-label="Email">${(item.bu_email)?item.bu_email:'-'}</td>
+                  <td data-label="Website">${(item.bu_website)?item.bu_website:'-'}</td>
+                  <td data-label="Bentuk Usaha">${(item.bu_bentuk_badan_usaha)?item.bu_bentuk_badan_usaha:'-'}</td>
+                  <td data-label="Jenis Usaha">${(item.bu_jenis_badan_usaha)?item.bu_jenis_badan_usaha:'-'}</td>
               </tr>`;
               }).join('')}
           </tbody>
@@ -67,7 +67,6 @@ var app = new Reef('#app', {
   });
   
   app.render();
-  console.log(app.data.filterby);
 
   function searchData(value, pagenow, itemperpage, filterby, filter) {
     refresh('Proses loading data...');
