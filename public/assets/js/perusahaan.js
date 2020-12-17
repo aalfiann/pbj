@@ -37,7 +37,7 @@ var app = new Reef('#app', {
               return `<tr>
                   <td data-label="#">${num+((props.pageNow-1)*props.itemPerPage)}</td>
                   <td data-label="NPWP">${item.npwp}</td>
-                  <td data-label="Nama Perusahaan">${(item.bu_nama) ? item.bu_nama: '-'}</td>
+                  <td data-label="Nama Perusahaan">${(item.nama_peserta) ? item.nama_peserta: '-'}</td>
                   <td data-label="Alamat">${(item.bu_alamat)?item.bu_alamat:'-'}</td>
                   <td data-label="Kabupaten">${(item.bu_kabupaten)?item.bu_kabupaten:'-'}</td>
                   <td data-label="Kodepos">${(item.bu_kodepos)?item.bu_kodepos:'-'}</td>
