@@ -43,7 +43,7 @@ function repairbukahpsterjemahan(){
 					console.log("Check: " + index + " --- " + hps_terjemahan);
 					index = index + 1;
 				});
-				callback(null, "");
+				callback("");
 			}, function(err) {
 				console.log(err);
 			});
