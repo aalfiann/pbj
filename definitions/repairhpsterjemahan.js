@@ -15,11 +15,10 @@ function repairbukahpsterjemahan(){
 
 		console.log("REPAIR: " + response.length);
 		if (response.length > 0) {
-			var index = 0;
 			async.each(response, function(isinya, callback) {
 				var buattambahnol = '';
 				var hps_terjemahan = '0';
-				var hpsnya = response[index].hps;
+				var hpsnya = isinya.hps;
 				if (hpsnya != undefined && hpsnya != null && hpsnya != '') {
 					if (hpsnya.toLowerCase().search("rb") != -1) {
 						buattambahnol = "000";
@@ -37,13 +36,11 @@ function repairbukahpsterjemahan(){
 					hps_terjemahan = hps_terjemahan + buattambahnol;
 				}
 				
-				var utkupdate = [response[index].tender_id, hps_terjemahan];
+				var utkupdate = [isinya.tender_id, hps_terjemahan];
 				db.query('UPDATE dt_tender SET hps_terjemahan = $2 WHERE tender_id = $1', utkupdate).callback(function(err, response) {
 					if (err) throw err;
-					console.log("Check: " + index + " --- " + hps_terjemahan);
-					index = index + 1;
+					console.log("Check: " + hps_terjemahan);
 				});
-				callback("");
 			}, function(err) {
 				console.log(err);
 			});
