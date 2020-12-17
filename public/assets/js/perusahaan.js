@@ -21,10 +21,6 @@ var app = new Reef('#app', {
               <th>NPWP</th>
               <th>Nama Perusahan</th>
               <th>Alamat</th>
-              <th>Kabupaten</th>
-              <th>Kodepos</th>
-              <th>Telepon</th>
-              <th>Fax</th>
               <th>Email</th>
               <th>Website</th>
               <th>Bentuk Usaha</th>
@@ -34,15 +30,19 @@ var app = new Reef('#app', {
           <tbody>
               ${props.table.map(function(item, index) {
               var num = (index+1);
+              var readdress = '-';
+              if (item.bu_alamat) {
+                readdress = item.bu_alamat + '<br>';
+                readdress += item.bu_kabupaten + (item.bu_kodepos == 0 ? '<br>' : ' '+ item.bu_kodepos + '<br>');
+                readdress += 'Telp: ' + (item.bu_telepon == 0 ? '-': item.bu_telepon) + '<br>';
+                readdress += 'Fax: ' + (item.bu_fax == 0 ? '-': item.bu_fax);
+              }
+              
               return `<tr>
                   <td data-label="#">${num+((props.pageNow-1)*props.itemPerPage)}</td>
                   <td data-label="NPWP">${item.npwp}</td>
                   <td data-label="Nama Perusahaan">${(item.nama_peserta) ? item.nama_peserta: '-'}</td>
-                  <td data-label="Alamat">${(item.bu_alamat)?item.bu_alamat:'-'}</td>
-                  <td data-label="Kabupaten">${(item.bu_kabupaten)?item.bu_kabupaten:'-'}</td>
-                  <td data-label="Kodepos">${(item.bu_kodepos)?item.bu_kodepos:'-'}</td>
-                  <td data-label="Telepon">${(item.bu_telepon)?item.bu_telepon:'-'}</td>
-                  <td data-label="Fax">${(item.bu_fax)?item.bu_fax:'-'}</td>
+                  <td data-label="Alamat">${readdress}</td>
                   <td data-label="Email">${(item.bu_email)?item.bu_email:'-'}</td>
                   <td data-label="Website">${(item.bu_website)?item.bu_website:'-'}</td>
                   <td data-label="Bentuk Usaha">${(item.bu_bentuk_badan_usaha)?item.bu_bentuk_badan_usaha:'-'}</td>
