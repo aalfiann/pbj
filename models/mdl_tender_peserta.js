@@ -15,7 +15,6 @@ exports.APIOpenPerusahaan = function(katakunci, sortby, sortbyasc, filterby, fil
     });
 };
 
-
 function OpenPerusahaan(katakunci, sortby, sortbyasc, filterby, filter, page, limit, self, req, receivetime) {
 	return new Promise(function(resolve, reject) {
         var db = DBMS();
@@ -97,7 +96,7 @@ function OpenPerusahaan(katakunci, sortby, sortbyasc, filterby, filter, page, li
                             }
                         buatjson.push(buatjsonarr);
                         index = index + 1;
-                        callback(null, "");
+                        callback("");
                     }, function(err) {
                         if (err) throw err;
                     });
@@ -111,6 +110,134 @@ function OpenPerusahaan(katakunci, sortby, sortbyasc, filterby, filter, page, li
                     reject("Tidak ada data perusahaan.");
                 }
         });
+		} catch(err) {
+			reject(err);
+		}
+	});
+};
+
+exports.APIOpenPerusahaanDetail = function(npwp, self, req, receivetime){
+    var initializePromise = OpenPerusahaanDetail(npwp, self, req, receivetime);
+    initializePromise.then(function() {
+        
+    }, function(err) {
+        console.log(err);
+        self.json(JSON.parse(BalikanHeaderFINAL("false", err, "error", "Perhatikan parameter yang dikirimkan.", JSON.stringify(req), receivetime, "", 0)));
+    });
+};
+
+function OpenPerusahaanDetail(npwp, self, req, receivetime) {
+	return new Promise(function(resolve, reject) {
+		var db = DBMS();
+        var async = require('async');
+        var buatjsonutama = [];
+        var buatjsonklasifikasi = [];
+        var buatjsonkeuangan = [];
+        var buatjsonpengurus = [];
+        var buatjsontenagakerja = [];
+		try {
+            var utkselect = [npwp];
+			db.query('SELECT bu_klasifikasi_sub_bidang_klasifikasi, bu_klasifikasi_kode, bu_klasifikasi_kualifikasi, bu_klasifikasi_tahun, bu_klasifikasi_nilai, bu_klasifikasi_asosiasi, bu_klasifikasi_tanggal_permohonan, bu_klasifikasi_tanggal_cetak_pertama, bu_klasifikasi_tanggal_cetak_perubahan_terakhir, bu_klasifikasi_tanggal_registrasi_tahun_2 FROM dt_badan_usaha_klasifikasi WHERE (bu_npwp = $1)', utkselect).callback(function(err, response) {
+				if (err) throw err;
+                var index = 0;
+				if (response.length > 0) {
+                    async.each(response, function(isinya, callback) {
+                        var buatjsonklasifikasiarr1 = {
+                            bu_klasifikasi_sub_bidang_klasifikasi: response[index].bu_klasifikasi_sub_bidang_klasifikasi,
+                            bu_klasifikasi_kode: response[index].bu_klasifikasi_kode,
+                            bu_klasifikasi_kualifikasi: response[index].bu_klasifikasi_kualifikasi,
+                            bu_klasifikasi_tahun: response[index].bu_klasifikasi_tahun,
+                            bu_klasifikasi_nilai: response[index].bu_klasifikasi_nilai,
+                            bu_klasifikasi_asosiasi: response[index].bu_klasifikasi_asosiasi,
+                            bu_klasifikasi_tanggal_permohonan: response[index].bu_klasifikasi_tanggal_permohonan,
+                            bu_klasifikasi_tanggal_cetak_pertama: response[index].bu_klasifikasi_tanggal_cetak_pertama,
+                            bu_klasifikasi_tanggal_cetak_perubahan_terakhir: response[index].bu_klasifikasi_tanggal_cetak_perubahan_terakhir,
+                            bu_klasifikasi_tanggal_registrasi_tahun_2: response[index].bu_klasifikasi_tanggal_registrasi_tahun_2
+                        }
+                        buatjsonklasifikasi.push(buatjsonklasifikasiarr1);
+                        index = index + 1;
+                    }, function(err) {
+                        console.log(err);
+                    });
+                    buatjsonutama.push(buatjsonklasifikasi);
+				}
+            });
+            utkselect = [npwp];
+            db.query('SELECT bu_keuangan_nama, bu_keuangan_ktp, bu_keuangan_alamat, bu_keuangan_jumlah_saham, bu_keuangan_satuan_saham, bu_keuangan_modal_dasar, bu_keuangan_modal_setor FROM dt_badan_usaha_keuangan WHERE (bu_npwp = $1)', utkselect).callback(function(err, response) {
+				if (err) throw err;
+
+                index = 0;
+				if (response.length > 0) {
+                    async.each(response, function(isinya, callback) {
+                        var buatjsonkeuanganarr1 = {
+                            bu_keuangan_nama: response[index].bu_keuangan_nama,
+                            bu_keuangan_ktp: response[index].bu_keuangan_ktp,
+                            bu_keuangan_alamat: response[index].bu_keuangan_alamat,
+                            bu_keuangan_jumlah_saham: response[index].bu_keuangan_jumlah_saham,
+                            bu_keuangan_satuan_saham: response[index].bu_keuangan_satuan_saham,
+                            bu_keuangan_modal_dasar: response[index].bu_keuangan_modal_dasar,
+                            bu_keuangan_modal_setor: response[index].bu_keuangan_modal_setor
+                        }
+                        buatjsonkeuangan.push(buatjsonkeuanganarr1);
+                        index = index + 1;
+                    }, function(err) {
+                        console.log(err);
+                    });
+                    buatjsonutama.push(buatjsonkeuangan);
+				}
+            });
+            utkselect = [npwp];
+            db.query('SELECT bu_pengurus_nama, bu_pengurus_tanggal_lahir, bu_pengurus_alamat, bu_pengurus_ktp, bu_pengurus_jabatan, bu_pengurus_pendidikan FROM dt_badan_usaha_pengurus WHERE (bu_npwp = $1)', utkselect).callback(function(err, response) {
+				if (err) throw err;
+
+                index = 0;
+				if (response.length > 0) {
+                    async.each(response, function(isinya, callback) {
+                        var buatjsonpengurus1 = {
+                            bu_pengurus_nama: response[index].bu_pengurus_nama,
+                            bu_pengurus_tanggal_lahir: response[index].bu_pengurus_tanggal_lahir,
+                            bu_pengurus_alamat: response[index].bu_pengurus_alamat,
+                            bu_pengurus_ktp: response[index].bu_pengurus_ktp,
+                            bu_pengurus_jabatan: response[index].bu_pengurus_jabatan,
+                            bu_pengurus_pendidikan: response[index].bu_pengurus_pendidikan
+                        }
+                        buatjsonpengurus.push(buatjsonpengurus1);
+                        index = index + 1;
+                    }, function(err) {
+                        console.log(err);
+                    });
+                    buatjsonutama.push(buatjsonpengurus);
+                }
+            });
+            utkselect = [npwp];
+            db.query('SELECT bu_tenaga_kerja_nama, bu_tenaga_kerja_tanggal_lahir, bu_tenaga_kerja_ktp, bu_tenaga_kerja_pendidikan, bu_tenaga_kerja_no_registrasi, bu_tenaga_kerja_jenis_sertifikat, bu_tenaga_kerja_detail_link FROM dt_badan_usaha_tenaga_kerja WHERE (bu_npwp = $1)', utkselect).callback(function(err, response) {
+				if (err) throw err;
+
+                index = 0;
+				if (response.length > 0) {
+                    async.each(response, function(isinya, callback) {
+                        var buatjsontenagakerja1 = {
+                            bu_tenaga_kerja_nama: response[index].bu_tenaga_kerja_nama,
+                            bu_tenaga_kerja_tanggal_lahir: response[index].bu_tenaga_kerja_tanggal_lahir,
+                            bu_tenaga_kerja_ktp: response[index].bu_tenaga_kerja_ktp,
+                            bu_tenaga_kerja_pendidikan: response[index].bu_tenaga_kerja_pendidikan,
+                            bu_tenaga_kerja_no_registrasi: response[index].bu_tenaga_kerja_no_registrasi,
+                            bu_tenaga_kerja_jenis_sertifikat: response[index].bu_tenaga_kerja_jenis_sertifikat,
+                            bu_tenaga_kerja_detail_link: response[index].bu_tenaga_kerja_detail_link
+                        }
+                        buatjsontenagakerja.push(buatjsontenagakerja1);
+                        index = index + 1;
+                    }, function(err) {
+                        console.log(err);
+                    });
+                    buatjsonutama.push(buatjsontenagakerja);
+                    self.json(JSON.parse(BalikanHeaderFINAL("true", "Berhasil buka data detail perusahaan.", "", "Total semua data: " + response.length, JSON.stringify(req), receivetime, JSON.stringify(buatjsonutama), parseInt(response.length))));					
+                    
+                    resolve("Berhasil buka detail perusahaan.");
+				} else {
+					reject("Tidak ada data detail perusahaan.");
+				}
+			});
 		} catch(err) {
 			reject(err);
 		}

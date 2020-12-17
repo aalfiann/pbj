@@ -22,7 +22,7 @@ var AutoRunTender = setInterval(function() {
 
 async function scraplpjk() {
     var scraplpjknya = require('../definitions/scraplpjk');
-    await scraplpjknya.scraplpjk();
+    await scraplpjknya.ambilDetailSBU();
     sedangjalanLPJK = 0;
 };
 

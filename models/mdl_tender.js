@@ -130,7 +130,7 @@ function OpenListTender(katakunci, sortby, sortbyasc, filterby, filter, page, li
                             }
                         buatjson.push(buatjsonarr);
                         index = index + 1;
-                        callback(null, "");
+                        callback("");
                     }, function(err) {
                         if (err) throw err;
                     });

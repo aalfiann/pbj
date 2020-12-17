@@ -15,7 +15,7 @@ exports.insertlpjk = function (dataSBU) {
                             dataSBU.kualifikasi_dan_klasifikasi[i].tahun.trim(), dataSBU.kualifikasi_dan_klasifikasi[i].nilai.trim(), dataSBU.kualifikasi_dan_klasifikasi[i].asosiasi.trim(), dataSBU.kualifikasi_dan_klasifikasi[i].tgl_permohonan.trim(), dataSBU.kualifikasi_dan_klasifikasi[i].tgl_cetak_pertama.trim(), dataSBU.kualifikasi_dan_klasifikasi[i].tgl_cetak_perubahan_terakhir.trim(), dataSBU.kualifikasi_dan_klasifikasi[i].tgl_reg_thn_2r.trim()); 
                             initializePromise1.then(function() {
                                 i = i + 1;
-                                callback(null, "");
+                                callback("");
                             }, function(err) {
                                 i = i + 1;
                                 console.log(err)
@@ -30,7 +30,7 @@ exports.insertlpjk = function (dataSBU) {
                             dataSBU.pengurus[j].no_ktp.trim(), dataSBU.pengurus[j].jabatan.trim(), dataSBU.pengurus[j].pendidikan.trim()); 
                             initializePromise2.then(function() {
                                 j = j + 1;
-                                callback(null, "");
+                                callback("");
                             }, function(err) {
                                 j = j + 1;
                                 console.log(err)
@@ -45,7 +45,7 @@ exports.insertlpjk = function (dataSBU) {
                             dataSBU.tenaga_kerja[k].pendidikan.trim(), dataSBU.tenaga_kerja[k].no_registrasi.trim(), dataSBU.tenaga_kerja[k].jenis_sertifikat.trim(), dataSBU.tenaga_kerja[k].detail.trim()); 
                             initializePromise3.then(function() {
                                 k = k + 1;
-                                callback(null, "");
+                                callback("");
                             }, function(err) {
                                 k = k + 1;
                                 console.log(err)
@@ -60,7 +60,7 @@ exports.insertlpjk = function (dataSBU) {
                             dataSBU.keuangan[l].jumlah_saham.trim(), dataSBU.keuangan[l].nilai_satuan_saham.trim(), dataSBU.keuangan[l].modal_dasar.trim(), dataSBU.keuangan[l].modal_setor.trim()); 
                             initializePromise4.then(function() {
                                 l = l + 1;
-                                callback(null, "");
+                                callback("");
                             }, function(err) {
                                 l = l + 1;
                                 console.log(err)
