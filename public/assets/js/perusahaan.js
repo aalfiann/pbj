@@ -17,14 +17,15 @@ var app = new Reef('#app', {
         return `<table class="table space-top">
           <thead>
               <tr>
-              <th>#</th>
-              <th>NPWP</th>
-              <th>Nama Perusahan</th>
-              <th>Alamat</th>
-              <th>Email</th>
-              <th>Website</th>
-              <th>Bentuk Usaha</th>
-              <th>Jenis Usaha</th>
+                <th>#</th>
+                <th>NPWP</th>
+                <th>Nama Perusahan</th>
+                <th>Alamat</th>
+                <th>Email</th>
+                <th>Website</th>
+                <th>Bentuk Usaha</th>
+                <th>Jenis Usaha</th>
+                <th>Detail</th>
               </tr>
           </thead>
           <tbody>
@@ -47,6 +48,7 @@ var app = new Reef('#app', {
                   <td data-label="Website">${(item.bu_website)?item.bu_website:'-'}</td>
                   <td data-label="Bentuk Usaha">${(item.bu_bentuk_badan_usaha)?item.bu_bentuk_badan_usaha:'-'}</td>
                   <td data-label="Jenis Usaha">${(item.bu_jenis_badan_usaha)?item.bu_jenis_badan_usaha:'-'}</td>
+                  <td data-label="Detail"><a href="javascript:void(0)" class="btn btn-b btn-sm smooth" onclick="showPerusahaan('${item.npwp}')">Show</a></td>
               </tr>`;
               }).join('')}
           </tbody>
@@ -213,4 +215,224 @@ function jumpPage() {
     .catch(function(response, xhr){
       console.log(xhr.responseText);
     })
+  }
+
+  function showPerusahaan(npwp) {
+    ajax({
+      headers: {
+        'pbj-api-key':'ngupas@2020',
+        'content-type':'application/json'
+      }
+    })
+    .post('@{CONF.baseUrl}/perusahaan/detailperusahaan', {
+      npwp: npwp
+    })
+    .then(function(response, xhr) {
+      console.log(response.data);
+      if(response.sts_res === 'true' && response.data.length > 0) {
+        detail.data.npwp = npwp;
+        detail.data.kualifikasi = response.data[0];
+        detail.data.keuangan = response.data[1];
+        detail.data.pengurus = response.data[2];
+        detail.data.tenagakerja = response.data[3];
+      }
+    })
+    .catch(function(response, xhr) {
+      console.log(xhr.responseText);
+    })
+    
+  }
+
+  document.addEventListener('render', function (event) {
+
+    // Only run for elements with the #app ID
+    if (!event.target.matches('#detail')) return;
+  
+    // Log the data at the time of render
+    if(event.detail.npwp) {
+      var modal = new tingle.modal({
+        footer: true,
+        stickyFooter: false,
+        closeMethods: ['overlay', 'button', 'escape'],
+        beforeOpen: function() {
+          Dom.id('detail').style.display = 'inline';
+          modal.setContent(Dom.id('detail').innerHTML);
+        },
+        onOpen: function() {
+          console.log('OPENED! '+event.detail.npwp);
+          Dom.id('detail').innerHTML = '';
+        },
+        onClose: function() {
+          detail.data.npwp = '';
+          modal.destroy();
+        }
+      });
+      modal.open();
+    }
+  
+  }, false);
+
+  var detail = new Reef('#detail', {
+    data: {
+      npwp: '',
+      kualifikasi: [],
+      keuangan: [],
+      pengurus: [],
+      tenagakerja: []
+    },
+    template: function(props) {
+      if(props.npwp) {
+        return `<div class="tab">
+          <button class="tablinks active" onclick="openCity(event, 'klasifikasi')">Klasifikasi dan Kualisi</button>
+          <button class="tablinks" onclick="openCity(event, 'keuangan')">Keuangan</button>
+          <button class="tablinks" onclick="openCity(event, 'pengurus')">Pengurus</button>
+          <button class="tablinks" onclick="openCity(event, 'tenagakerja')">Tenaga Kerja</button>
+        </div>
+        
+        <div id="klasifikasi" class="tabcontent" style="display:block;">
+          <table class="table space-top">
+            <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Sub Bidang</th>
+                  <th>Kode</th>
+                  <th>Kualifikasi</th>
+                  <th>Tahun</th>
+                  <th>Nilai</th>
+                  <th>Asosiasi</th>
+                  <th>Tgl Permohonan</th>
+                  <th>Tgl Cetak Pertama</th>
+                  <th>Tgl Cetak Perubahan Terakhir</th>
+                  <th>Tgl Registrasi Th2</th>
+                </tr>
+            </thead>
+            <tbody>
+              ${props.kualifikasi.map(function(item, index) {
+                return `<tr>
+                    <td data-label="#">${(index+1)}</td>
+                    <td data-label="Sub Bidang">${item.bu_klasifikasi_sub_bidang_klasifikasi}</td>
+                    <td data-label="Kode">${item.bu_klasifikasi_kode}</td>
+                    <td data-label="Kualifikasi">${item.bu_klasifikasi_kualifikasi}</td>
+                    <td data-label="Tahun">${item.bu_klasifikasi_tahun}</td>
+                    <td data-label="Nilai">${item.bu_klasifikasi_nilai}</td>
+                    <td data-label="Asosiasi">${item.bu_klasifikasi_asosiasi}</td>
+                    <td data-label="Tgl Permohonan">${item.bu_klasifikasi_tanggal_permohonan}</td>
+                    <td data-label="Tgl Cetak Pertama">${item.bu_klasifikasi_tanggal_cetak_pertama}</td>
+                    <td data-label="Tgl Cetak Perubahan Terakhir">${item.bu_klasifikasi_tanggal_cetak_perubahan_terakhir}</td>
+                    <td data-label="Tgl Registrasi Th2">${(item.bu_klasifikasi_tanggal_registrasi_tahun_2?item.bu_klasifikasi_tanggal_registrasi_tahun_2:'-')}</td>
+                  </tr>`;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>
+        
+        <div id="keuangan" class="tabcontent">
+          <table class="table space-top">
+            <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Nama</th>
+                  <th>KTP</th>
+                  <th>Alamat</th>
+                  <th>Jumlah Saham</th>
+                  <th>Satuan Saham</th>
+                  <th>Modal Dasar</th>
+                  <th>Modal Setor</th>
+                </tr>
+            </thead>
+            <tbody>
+              ${props.keuangan.map(function(item, index) {
+                return `<tr>
+                    <td data-label="#">${(index+1)}</td>
+                    <td data-label="Nama">${item.bu_keuangan_nama}</td>
+                    <td data-label="KTP">${item.bu_keuangan_ktp}</td>
+                    <td data-label="Alamat">${item.bu_keuangan_alamat}</td>
+                    <td data-label="Jumlah Saham">${item.bu_keuangan_jumlah_saham}</td>
+                    <td data-label="Satuan Saham">${item.bu_keuangan_satuan_saham}</td>
+                    <td data-label="Modal Dasar">${item.bu_keuangan_modal_dasar}</td>
+                    <td data-label="Modal Setor">${item.bu_keuangan_modal_setor}</td>
+                  </tr>`;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>
+        
+        <div id="pengurus" class="tabcontent">
+          <table class="table space-top">
+            <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Nama</th>
+                  <th>Tgl Lahir</th>
+                  <th>Alamat</th>
+                  <th>KTP</th>
+                  <th>Jabatan</th>
+                  <th>Pendidikan</th>
+                </tr>
+            </thead>
+            <tbody>
+              ${props.pengurus.map(function(item, index) {
+                return `<tr>
+                    <td data-label="#">${(index+1)}</td>
+                    <td data-label="Nama">${item.bu_pengurus_nama}</td>
+                    <td data-label="Tgl Lahir">${item.bu_pengurus_tanggal_lahir}</td>
+                    <td data-label="Alamat">${item.bu_pengurus_alamat}</td>
+                    <td data-label="KTP">${item.bu_pengurus_ktp}</td>
+                    <td data-label="Jabatan">${item.bu_pengurus_jabatan}</td>
+                    <td data-label="Pendidikan">${item.bu_pengurus_pendidikan}</td>
+                  </tr>`;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>
+        
+        <div id="tenagakerja" class="tabcontent">
+          <table class="table space-top">
+            <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Nama</th>
+                  <th>Tgl Lahir</th>
+                  <th>KTP</th>
+                  <th>Pendidikan</th>
+                  <th>No Registrasi</th>
+                  <th>Jenis Sertifikat</th>
+                  <th>Link</th>
+                </tr>
+            </thead>
+            <tbody>
+              ${props.tenagakerja.map(function(item, index) {
+                return `<tr>
+                    <td data-label="#">${(index+1)}</td>
+                    <td data-label="Nama">${item.bu_tenaga_kerja_nama}</td>
+                    <td data-label="Tgl Lahir">${item.bu_tenaga_kerja_tanggal_lahir}</td>
+                    <td data-label="KTP">${item.bu_tenaga_kerja_ktp}</td>
+                    <td data-label="Pendidikan">${item.bu_tenaga_kerja_pendidikan}</td>
+                    <td data-label="No Registrasi">${item.bu_tenaga_kerja_no_registrasi}</td>
+                    <td data-label="Jenis Sertifikat">${item.bu_tenaga_kerja_jenis_sertifikat}</td>
+                    <td data-label="Link"><a href="${item.bu_tenaga_kerja_detail_link}" class="btn btn-b btn-sm smooth" target="_blank" rel="nofollow noopener">Cek</a></td>
+                  </tr>`;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>`;
+      } else {
+        return ``;
+      }
+    }
+  });
+  detail.render();
+
+  function openCity(evt, cityName) {
+    var i, tabcontent, tablinks;
+    tabcontent = document.getElementsByClassName("tabcontent");
+    for (i = 0; i < tabcontent.length; i++) {
+      tabcontent[i].style.display = "none";
+    }
+    tablinks = document.getElementsByClassName("tablinks");
+    for (i = 0; i < tablinks.length; i++) {
+      tablinks[i].className = tablinks[i].className.replace(" active", "");
+    }
+    document.getElementById(cityName).style.display = "block";
+    evt.currentTarget.className += " active";
   }
