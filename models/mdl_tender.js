@@ -107,32 +107,29 @@ function OpenListTender(katakunci, sortby, sortbyasc, filterby, filter, page, li
                 if (err) throw err;
 
                 if (response.length > 0) {
-                    var index = 0;
                     var jumlahdata = response[0].jumlahsemua;
                     async.each(response, function(isinya, callback) {
                         var buatjsonarr = {
-                            tender_id: response[index].tender_idnya,
-                            url_tender_id: response[index].url_tender_id,
-                            url_tender_link: response[index].url_tender_link,
-                            kode: response[index].kode,
-                            nama_paket: response[index].nama_paket,
-                            tender_label: response[index].tender_label,
-                            instansi: response[index].instansi,
-                            tahap: response[index].tahap,
-                            hps: response[index].hps,
-                            kategori: response[index].kategori,
-                            sistem_pengadaan: response[index].sistem_pengadaan,
-                            tahun_anggaran: response[index].tahun_anggaran,
-                            nilai_kontrak: response[index].nilai_kontrak,
-                            created_date: response[index].created_date,
-                            modified_date: response[index].modified_date,
-                            status_active_id: response[index].status_active_id,
+                            tender_id: isinya.tender_idnya,
+                            url_tender_id: isinya.url_tender_id,
+                            url_tender_link: isinya.url_tender_link,
+                            kode: isinya.kode,
+                            nama_paket: isinya.nama_paket,
+                            tender_label: isinya.tender_label,
+                            instansi: isinya.instansi,
+                            tahap: isinya.tahap,
+                            hps: isinya.hps,
+                            kategori: isinya.kategori,
+                            sistem_pengadaan: isinya.sistem_pengadaan,
+                            tahun_anggaran: isinya.tahun_anggaran,
+                            nilai_kontrak: isinya.nilai_kontrak,
+                            created_date: isinya.created_date,
+                            modified_date: isinya.modified_date,
+                            status_active_id: isinya.status_active_id,
                             }
                         buatjson.push(buatjsonarr);
-                        index = index + 1;
-                        callback("");
                     }, function(err) {
-                        if (err) throw err;
+                        console.log(err);
                     });
                     if (buatjson.length > 0) {
                         self.json(JSON.parse(BalikanHeaderFINAL("true", "Berhasil buka data tender.", "", "Total semua data: " + jumlahdata, JSON.stringify(req), receivetime, JSON.stringify(buatjson), jumlahdata)));					

@@ -30,19 +30,19 @@ function startGetData(req, receivetime) {
     });
 };
 
-async function asyncinsertlpjk(dataSBU) {
-	var data = await insertlpjk(dataSBU).catch(err => {
+async function asyncinsertlpjk(dataSBU, statusReg) {
+	var data = await insertlpjk(dataSBU, statusReg).catch(err => {
         console.log(err);
       });
 	return data;
 };
 
-function insertlpjk(dataSBU) {
+function insertlpjk(dataSBU, statusReg) {
     return new Promise(function(resolve, reject) {
         try {
             var modelsnya = require('../models/mdl_insert_lpjk');
 
-            var initializePromise = modelsnya.insertlpjk(dataSBU);
+            var initializePromise = modelsnya.insertlpjk(dataSBU, statusReg);
             initializePromise.then(function() {
                 resolve();
             }, function(err) {
@@ -55,14 +55,21 @@ function insertlpjk(dataSBU) {
 };
 
 //OKELAH
-async function asynccheckNPWP(npwp) {
-    var data = await checkNPWP(npwp).catch(err => {
+async function asynccheckNPWPaktif(npwp) {
+    var data = await checkNPWPaktif(npwp).catch(err => {
         console.log(err);
     });
 	return data;
 };
 
-function checkNPWP(npwp) {
+async function asynccheckNPWPtidakaktif(npwp) {
+    var data = await checkNPWPtidakaktif(npwp).catch(err => {
+        console.log(err);
+    });
+	return data;
+};
+
+function checkNPWPaktif(npwp) {
     return new Promise((resolve, reject) => {
         var unirest = require('unirest');
         unirest('POST', 'https://search.lpjk.net/search_badan_usaha/searching_bu')
@@ -74,7 +81,29 @@ function checkNPWP(npwp) {
             .send('status_reg=aktif')
             .end(function (res) {
                 if (res.error) {
-                    reject("Data not found");
+                    reject("");
+                } else {
+                    var data = JSON.parse(res.body);
+                    resolve(data.record);
+                }
+            });
+    });
+}
+
+function checkNPWPtidakaktif(npwp) {
+    return new Promise((resolve, reject) => {
+        var unirest = require('unirest');
+        unirest('POST', 'https://search.lpjk.net/search_badan_usaha/searching_bu')
+            .headers({
+                'Content-Type': 'application/x-www-form-urlencoded',
+            })
+            .send('racord=' + npwp)
+            .send('option=npwp')
+            .send('status_reg=proses')
+            .end(function (res) {
+                console.log(npwp + " --- " + res.body);
+                if (res.error) {
+                    reject("");
                 } else {
                     var data = JSON.parse(res.body);
                     resolve(data.record);
@@ -94,14 +123,28 @@ const ambilDetailSBU = async () => {
     if (obj != undefined) {
         for (var jjj=0;jjj<obj.data.length;jjj++){
             try {
-                var recnya = await asynccheckNPWP(obj.data[jjj].npwp);
+                var recnya = await asynccheckNPWPaktif(obj.data[jjj].npwp);
                 var html = "";
+                var statusreg = "Proses";
                 
                 if (recnya != undefined && recnya != null && recnya != '' && recnya.length > 0) {
                     await page.goto(recnya[0].link, { waitUntil: 'networkidle0' });
                     html = await page.content();
+                    statusreg = "Aktif";
                     if (html.length > 250) {
-                        parseHtml(html);
+                        parseHtml(html, statusreg);
+                    }
+                } else {
+                    recnya = await asynccheckNPWPtidakaktif(obj.data[jjj].npwp);
+                    html = "";
+                    //console.log(statusreg);
+                    //console.log(recnya);
+                    if (recnya != undefined && recnya != null && recnya != '' && recnya.length > 0) {
+                        await page.goto(recnya[0].link, { waitUntil: 'networkidle0' });
+                        html = await page.content();
+                        if (html.length > 250) {
+                            parseHtml(html, statusreg);
+                        }
                     }
                 }
             } catch (err) {
@@ -113,7 +156,7 @@ const ambilDetailSBU = async () => {
     hitungwaktu("SCRAP LPJK", waktumulaiINSERT);
 };
 
-async function parseHtml(strHtml) {
+async function parseHtml(strHtml, statusReg) {
     var parser = new DomParser();
     var dom = parser.parseFromString(strHtml, "text/html");
     var badanUsaha = dom.getElementById('badan_usaha');
@@ -134,7 +177,7 @@ async function parseHtml(strHtml) {
             tenaga_kerja: dtTenagaKerja,
             kualifikasi_dan_klasifikasi: dtKualifikasiDanKlasifikasi
         }
-        await asyncinsertlpjk(dataSBU);
+        await asyncinsertlpjk(dataSBU, statusReg);
         return dataSBU;
     } else {
         return "";
