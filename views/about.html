@@ -1,0 +1,24 @@
+@{title('Tentang Kami')}
+
+@{section meta}
+	@{view('partial-meta')}
+@{end}
+@{section menu}
+	@{view('partial-menu')}
+@{end}
+
+<div class="container">
+  <h1>Tentang Kami</h1>
+  <p>
+    Website ini akan menjelajahi 614 LPSE untuk anda. Dengan berbagai macam fitur pencarian antara lain LPSE, Instansi, NPWP, Nama Perusahaan dan Tahap, maka aplikasi ini akan melakukan pencarian secara otomatis di 614 LPSE seluruh Indonesia.
+  </p>
+  
+  <p>
+    <b>App Name: </b>@{CONF.name} - v.@{CONF.version}<br>
+    <b>Author: </b>@{CONF.author}<br>
+  </p>
+</div>
+
+@{section footer}
+  @{view('partial-footer')}
+@{end}
