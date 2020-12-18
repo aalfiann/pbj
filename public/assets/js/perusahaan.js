@@ -18,6 +18,7 @@ var app = new Reef('#app', {
           <thead>
               <tr>
                 <th>#</th>
+                <th>Status</th>
                 <th>NPWP</th>
                 <th>Nama Perusahan</th>
                 <th>Alamat</th>
@@ -38,9 +39,20 @@ var app = new Reef('#app', {
                 readdress += 'Telp: ' + (item.bu_telepon == 0 ? '-': item.bu_telepon) + '<br>';
                 readdress += 'Fax: ' + (item.bu_fax == 0 ? '-': item.bu_fax);
               }
-              
+              var status = '';
+              switch (true) {
+                case (item.bu_status_registrasi === 'Proses') :
+                  status = '<span class="badge badge-warning space-right">'+item.bu_status_registrasi+'</span>';
+                  break;
+                case (item.bu_status_registrasi === 'Tidak Diketemukan') :
+                  status = '<span class="badge badge-danger space-right">'+item.bu_status_registrasi+'</span>';
+                  break;
+                default: 
+                  status = '<span class="badge badge-success space-right">'+item.bu_status_registrasi+'</span>';
+              }
               return `<tr>
                   <td data-label="#">${num+((props.pageNow-1)*props.itemPerPage)}</td>
+                  <td data-label="Status">${status}</td>
                   <td data-label="NPWP">${item.npwp}</td>
                   <td data-label="Nama Perusahaan">${(item.nama_peserta) ? item.nama_peserta: '-'}</td>
                   <td data-label="Alamat">${readdress}</td>
@@ -176,13 +188,19 @@ function jumpPage() {
     app.data.message = '';
     app.data.filterby = parseInt(self.value);
     app.data.filter = '';
+    Dom.id('ifilter').style.display = 'none';
     Dom.id('search').style.display = 'none';
     if(app.data.filterby === 7) {
-        Dom.id('ifilter').placeholder = "Input Nama Perusahaan";
-        Dom.id('search').style.display = 'inline';
+      Dom.id('ifilter').style.display = 'inline';
+      Dom.id('search').style.display = 'inline';
+      Dom.id('ifilter').placeholder = "Input Nama Perusahaan";
+    } else if(app.data.filterby === 8) {
+      Dom.id('ifilter').style.display = 'inline';
+      Dom.id('ifilter').placeholder = "Input NPWP";
+      Dom.id('search').style.display = 'none';
     } else {
-        Dom.id('ifilter').placeholder = "Input NPWP";
-        Dom.id('search').style.display = 'none';
+      Dom.id('ifilter').style.display = 'none';
+      Dom.id('search').style.display = 'none';
     }
   }
 

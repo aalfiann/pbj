@@ -13,7 +13,7 @@ var app = new Reef('#app', {
   },
   template: function template(props) {
     if (props.table.length > 0) {
-      return "<table class=\"table space-top\">\n          <thead>\n              <tr>\n                <th>#</th>\n                <th>NPWP</th>\n                <th>Nama Perusahan</th>\n                <th>Alamat</th>\n                <th>Email</th>\n                <th>Website</th>\n                <th>Bentuk Usaha</th>\n                <th>Jenis Usaha</th>\n                <th>Detail</th>\n              </tr>\n          </thead>\n          <tbody>\n              ".concat(props.table.map(function (item, index) {
+      return "<table class=\"table space-top\">\n          <thead>\n              <tr>\n                <th>#</th>\n                <th>Status</th>\n                <th>NPWP</th>\n                <th>Nama Perusahan</th>\n                <th>Alamat</th>\n                <th>Email</th>\n                <th>Website</th>\n                <th>Bentuk Usaha</th>\n                <th>Jenis Usaha</th>\n                <th>Detail</th>\n              </tr>\n          </thead>\n          <tbody>\n              ".concat(props.table.map(function (item, index) {
         var num = index + 1;
         var readdress = '-';
 
@@ -24,7 +24,22 @@ var app = new Reef('#app', {
           readdress += 'Fax: ' + (item.bu_fax == 0 ? '-' : item.bu_fax);
         }
 
-        return "<tr>\n                  <td data-label=\"#\">".concat(num + (props.pageNow - 1) * props.itemPerPage, "</td>\n                  <td data-label=\"NPWP\">").concat(item.npwp, "</td>\n                  <td data-label=\"Nama Perusahaan\">").concat(item.nama_peserta ? item.nama_peserta : '-', "</td>\n                  <td data-label=\"Alamat\">").concat(readdress, "</td>\n                  <td data-label=\"Email\">").concat(item.bu_email ? item.bu_email : '-', "</td>\n                  <td data-label=\"Website\">").concat(item.bu_website ? item.bu_website : '-', "</td>\n                  <td data-label=\"Bentuk Usaha\">").concat(item.bu_bentuk_badan_usaha ? item.bu_bentuk_badan_usaha : '-', "</td>\n                  <td data-label=\"Jenis Usaha\">").concat(item.bu_jenis_badan_usaha ? item.bu_jenis_badan_usaha : '-', "</td>\n                  <td data-label=\"Detail\"><a href=\"javascript:void(0)\" class=\"btn btn-b btn-sm smooth\" onclick=\"showPerusahaan('").concat(item.npwp, "')\">Show</a></td>\n              </tr>");
+        var status = '';
+
+        switch (true) {
+          case item.bu_status_registrasi === 'Proses':
+            status = '<span class="badge badge-warning space-right">' + item.bu_status_registrasi + '</span>';
+            break;
+
+          case item.bu_status_registrasi === 'Tidak Diketemukan':
+            status = '<span class="badge badge-danger space-right">' + item.bu_status_registrasi + '</span>';
+            break;
+
+          default:
+            status = '<span class="badge badge-success space-right">' + item.bu_status_registrasi + '</span>';
+        }
+
+        return "<tr>\n                  <td data-label=\"#\">".concat(num + (props.pageNow - 1) * props.itemPerPage, "</td>\n                  <td data-label=\"Status\">").concat(status, "</td>\n                  <td data-label=\"NPWP\">").concat(item.npwp, "</td>\n                  <td data-label=\"Nama Perusahaan\">").concat(item.nama_peserta ? item.nama_peserta : '-', "</td>\n                  <td data-label=\"Alamat\">").concat(readdress, "</td>\n                  <td data-label=\"Email\">").concat(item.bu_email ? item.bu_email : '-', "</td>\n                  <td data-label=\"Website\">").concat(item.bu_website ? item.bu_website : '-', "</td>\n                  <td data-label=\"Bentuk Usaha\">").concat(item.bu_bentuk_badan_usaha ? item.bu_bentuk_badan_usaha : '-', "</td>\n                  <td data-label=\"Jenis Usaha\">").concat(item.bu_jenis_badan_usaha ? item.bu_jenis_badan_usaha : '-', "</td>\n                  <td data-label=\"Detail\"><a href=\"javascript:void(0)\" class=\"btn btn-b btn-sm smooth\" onclick=\"showPerusahaan('").concat(item.npwp, "')\">Show</a></td>\n              </tr>");
       }).join(''), "\n          </tbody>\n          </table>\n          <div class=\"row\">\n          <span class=\"pull-right\" style=\"margin-top:10px;\">Halaman ").concat(props.pageNow, " dari ").concat(props.totalPage, "</span>\n          <span class=\"pull-left\">\n              Page \n              <input id=\"jumpPage\" type=\"number\" class=\"smooth space-left space-right\" value=\"").concat(props.pageNow, "\"><span onclick=\"jumpPage()\" class=\"btn btn-a btn-sm smooth space-right\">GO</span>\n              <button onclick=\"prevPage()\" class=\"btn btn-sm smooth space-right\"><i class=\"mdi mdi-arrow-left-bold space-right\"></i> Prev</button>\n              <button onclick=\"nextPage()\" class=\"btn btn-sm smooth\">Next <i class=\"mdi mdi-arrow-right-bold space-left\"></i></button>\n          </span>\n          </div>");
     } else {
       return props.message ? '<div class="row"><message class="danger">' + props.message + '</message></div>' : '';
@@ -133,13 +148,19 @@ function setFilterBy(self) {
   app.data.message = '';
   app.data.filterby = parseInt(self.value);
   app.data.filter = '';
+  Dom.id('ifilter').style.display = 'none';
   Dom.id('search').style.display = 'none';
 
   if (app.data.filterby === 7) {
-    Dom.id('ifilter').placeholder = "Input Nama Perusahaan";
+    Dom.id('ifilter').style.display = 'inline';
     Dom.id('search').style.display = 'inline';
-  } else {
+    Dom.id('ifilter').placeholder = "Input Nama Perusahaan";
+  } else if (app.data.filterby === 8) {
+    Dom.id('ifilter').style.display = 'inline';
     Dom.id('ifilter').placeholder = "Input NPWP";
+    Dom.id('search').style.display = 'none';
+  } else {
+    Dom.id('ifilter').style.display = 'none';
     Dom.id('search').style.display = 'none';
   }
 }
