@@ -214,9 +214,9 @@ async function parseHtmlPemenang(html, tender_id, linknya, nilaipagepemenang) {
     var buatinsert = await asyncinsertdttenderpemenang(tender_id, namatender, kategori, instansi, 
         satker, pagu, hps, nama_pemenang, alamat, npwp, harga_penawaran);
 
-    process.stdout.clearLine();
-    process.stdout.cursorTo(0);
-    process.stdout.write("Tender: " + nilaipagepemenang + " --- Pemenang: 1 --- " + linknya);
+    // process.stdout.clearLine();
+    // process.stdout.cursorTo(0);
+    console.log("Tender: " + nilaipagepemenang + " --- Pemenang: 1 --- " + linknya);
 };
 
 async function parseHtmlpengumuman(html, tenderid, linknya, nilaipage) {
@@ -355,9 +355,9 @@ async function parseHtmlpengumuman(html, tenderid, linknya, nilaipage) {
         tanggalpembuatan, keterangan, tahaptendersaatini, instansi, satuankerja, sistempengadaan, tahunanggaran, 
         nilaipagupaket, nilaihpspaket, carapembayaran, lokasipekerjaan, kualifikasiusaha, syaratkualifikasi, pesertatender);
 
-    process.stdout.clearLine();
-    process.stdout.cursorTo(0);
-    process.stdout.write("Tender: " + nilaipage + " --- Pengumuman: 1 --- " + linknya);
+    // process.stdout.clearLine();
+    // process.stdout.cursorTo(0);
+    console.log("Tender: " + nilaipage + " --- Pengumuman: 1 --- " + linknya);
 };
 
 async function parseHtmlpeserta(html, tenderid, linknya, nilaipage) {
@@ -389,9 +389,9 @@ async function parseHtmlpeserta(html, tenderid, linknya, nilaipage) {
             }
         }
     }
-    process.stdout.clearLine();
-    process.stdout.cursorTo(0);
-    process.stdout.write("Tender: " + nilaipage + " --- Peserta: " + buatjson.length + " --- " + linknya);
+    // process.stdout.clearLine();
+    // process.stdout.cursorTo(0);
+    console.log("Tender: " + nilaipage + " --- Peserta: " + buatjson.length + " --- " + linknya);
     return buatjson;
 };
 

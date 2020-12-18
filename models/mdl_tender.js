@@ -29,6 +29,7 @@ function OpenListTender(katakunci, sortby, sortbyasc, filterby, filter, page, li
         }
 		try {
             var utkinput = [1];
+            var nilainpwp = "";
             var sambungwhere = "WHERE (dt_tender.status_active_id = $1) ";
             if (katakunci != undefined && katakunci != null && katakunci != '') {
                 katakunci =  "%" + katakunci.toLowerCase() + "%";
@@ -76,6 +77,7 @@ function OpenListTender(katakunci, sortby, sortbyasc, filterby, filter, page, li
                             utkinput.push('%'+ filter[i].toLowerCase() + '%');
                         } else if (filterby[i] == 3) {
                             sambungwhere = sambungwhere + "AND ((LOWER(dt_tender_peserta.nama_peserta) like $" + nilaiparam + ") OR (LOWER(REPLACE(REPLACE(dt_tender_peserta.npwp,'.',''),'-','')) like $" + nilaiparam +")) ";
+                            nilainpwp = filter[i].trim();
                             utkinput.push('%'+ filter[i].toLowerCase().replace(/\./g,'').replace(/-/g,'') + '%');
                         } else if (filterby[i] == 4) {
                             sambungwhere = sambungwhere + "AND (LOWER(dt_tender.tahap) like $" + nilaiparam + ") ";
@@ -102,13 +104,16 @@ function OpenListTender(katakunci, sortby, sortbyasc, filterby, filter, page, li
                 }
             }
             
-            db.query('SELECT dt_tender.*, dt_tender.tender_id as tender_idnya, (select count(*) as jumlah FROM (SELECT dt_tender.* FROM dt_tender LEFT JOIN dt_tender_peserta ON dt_tender.tender_id = dt_tender_peserta.tender_id ' + sambungwhere + ' GROUP BY dt_tender.tender_id, dt_tender.url_tender_id, dt_tender.url_tender_link, dt_tender.kode, dt_tender.nama_paket, dt_tender.tender_label, dt_tender.instansi, dt_tender.tahap, dt_tender.hps, dt_tender.kategori, dt_tender.sistem_pengadaan, dt_tender.tahun_anggaran, dt_tender.nilai_kontrak, dt_tender.created_date, dt_tender.modified_date, dt_tender.status_active_id) as jumlahnya) as jumlahsemua FROM dt_tender LEFT JOIN dt_tender_peserta ON dt_tender.tender_id = dt_tender_peserta.tender_id ' + 
-            sambungwhere + ' GROUP BY dt_tender.tender_id, dt_tender.url_tender_id, dt_tender.url_tender_link, dt_tender.kode, dt_tender.nama_paket, dt_tender.tender_label, dt_tender.instansi, dt_tender.tahap, dt_tender.hps, dt_tender.kategori, dt_tender.sistem_pengadaan, dt_tender.tahun_anggaran, dt_tender.nilai_kontrak, dt_tender.created_date, dt_tender.modified_date, dt_tender.status_active_id ' + sambungorderby + sambunglimitoffset, utkinput).callback(function(err, response) {
+            db.query("SELECT dt_tender.*, dt_tender.tender_id as tender_idnya, (select count(*) as jumlah FROM (SELECT dt_tender.* FROM dt_tender LEFT JOIN dt_tender_peserta ON dt_tender.tender_id = dt_tender_peserta.tender_id FULL JOIN dt_tender_pemenang ON dt_tender.tender_id = dt_tender_pemenang.tender_id " + sambungwhere + " GROUP BY dt_tender.tender_id, dt_tender.url_tender_id, dt_tender.url_tender_link, dt_tender.kode, dt_tender.nama_paket, dt_tender.tender_label, dt_tender.instansi, dt_tender.tahap, dt_tender.hps, dt_tender.kategori, dt_tender.sistem_pengadaan, dt_tender.tahun_anggaran, dt_tender.nilai_kontrak, dt_tender.created_date, dt_tender.modified_date, dt_tender.status_active_id, dt_tender_pemenang.nama_pemenang, dt_tender_pemenang.npwp) as jumlahnya) as jumlahsemua, COALESCE(dt_tender_pemenang.nama_pemenang, '') as nama_pemenang, COALESCE(dt_tender_pemenang.npwp,'') as npwp FROM dt_tender LEFT JOIN dt_tender_peserta ON dt_tender.tender_id = dt_tender_peserta.tender_id FULL JOIN dt_tender_pemenang ON dt_tender.tender_id = dt_tender_pemenang.tender_id " + sambungwhere + " GROUP BY dt_tender.tender_id, dt_tender.url_tender_id, dt_tender.url_tender_link, dt_tender.kode, dt_tender.nama_paket, dt_tender.tender_label, dt_tender.instansi, dt_tender.tahap, dt_tender.hps, dt_tender.kategori, dt_tender.sistem_pengadaan, dt_tender.tahun_anggaran, dt_tender.nilai_kontrak, dt_tender.created_date, dt_tender.modified_date, dt_tender.status_active_id, dt_tender_pemenang.nama_pemenang, dt_tender_pemenang.npwp " + sambungorderby + sambunglimitoffset, utkinput).callback(function(err, response) {
                 if (err) throw err;
 
                 if (response.length > 0) {
                     var jumlahdata = response[0].jumlahsemua;
                     async.each(response, function(isinya, callback) {
+                        var statuspemenang = "PESERTA";
+                        if (isinya.npwp == nilainpwp) {
+                            statuspemenang = "PEMENANG";
+                        }
                         var buatjsonarr = {
                             tender_id: isinya.tender_idnya,
                             url_tender_id: isinya.url_tender_id,
@@ -126,6 +131,9 @@ function OpenListTender(katakunci, sortby, sortbyasc, filterby, filter, page, li
                             created_date: isinya.created_date,
                             modified_date: isinya.modified_date,
                             status_active_id: isinya.status_active_id,
+                            nama_pemenang: isinya.nama_pemenang,
+                            npwp_pemenang: isinya.npwp,
+                            status_pemenang: statuspemenang
                             }
                         buatjson.push(buatjsonarr);
                     }, function(err) {
