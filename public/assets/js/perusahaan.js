@@ -60,7 +60,7 @@ var app = new Reef('#app', {
                   <td data-label="Website">${(item.bu_website)?item.bu_website:'-'}</td>
                   <td data-label="Bentuk Usaha">${(item.bu_bentuk_badan_usaha)?item.bu_bentuk_badan_usaha:'-'}</td>
                   <td data-label="Jenis Usaha">${(item.bu_jenis_badan_usaha)?item.bu_jenis_badan_usaha:'-'}</td>
-                  <td data-label="Detail">${(item.bu_status_registrasi === 'Tidak Diketemukan'? '-' : '<a href="javascript:void(0)" class="btn btn-b btn-sm smooth" onclick="showPerusahaan(\''+item.npwp+'\'">Show</a>')}</td>
+                  <td data-label="Detail">${item.bu_status_registrasi === 'Tidak Diketemukan'? '-' : `<a href="javascript:void(0)" class="btn btn-b btn-sm smooth" onclick="showPerusahaan('${item.npwp}')">Show</a>`}</td>
               </tr>`;
               }).join('')}
           </tbody>
