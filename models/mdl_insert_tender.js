@@ -42,7 +42,7 @@ function insertdttenderf(tender_id, url_tender_idnya, url_tender_linknya, kodeny
 				if (response.length > 0) {
 					var obj = JSON.parse(JSON.stringify(response));
 
-					if (obj[0].tahap != update_pengecualian) {
+					//if (obj[0].tahap != update_pengecualian) {
 						var utkinput = [kodenya, url_tender_idnya, url_tender_linknya, nama_paketnya, tender_labelnya, instansinya, tahapnya, 
 						hpsnya, kategorinya, sistem_pengadaannya, tahun_anggarannya, nilai_kontraknya, parseInt(hps_terjemahan)];
 						
@@ -55,9 +55,9 @@ function insertdttenderf(tender_id, url_tender_idnya, url_tender_linknya, kodeny
 								reject();
 							}
 						});
-					} else {
-						reject();
-					}
+					//} else {
+					//	reject();
+					//}
 				} else {
 					var utkinput = [tender_id, url_tender_idnya, url_tender_linknya, kodenya, nama_paketnya, tender_labelnya, instansinya, tahapnya, 
 					hpsnya, kategorinya, sistem_pengadaannya, tahun_anggarannya, nilai_kontraknya, parseInt(hps_terjemahan)];
