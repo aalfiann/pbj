@@ -25,7 +25,7 @@ var app = new Reef('#app', {
             <th>HPS</th>
             <th>Tanggal Update</th>
             <th>Link</th>
-            <th>Pemenang</th>
+            <th>Status Tender</th>
             </tr>
         </thead>
         <tbody>
@@ -33,13 +33,16 @@ var app = new Reef('#app', {
             var num = (index+1);
             item.modified_date = item.modified_date.replaceAll('&#58;',':')
             var statpemenang = '';
-            // switch(true) {
-            //   case item.status_pemenang === 'PESERTA':
-            //     statpemenang = '<span class="badge badge-warning space-right">'+item.status_pemenang+'</span>';
-            //     break;
-            //   default:
-            //     statpemenang = '<span class="badge badge-success space-right">'+item.status_pemenang+'</span>';
-            // }
+            switch(true) {
+              case item.status_pemenang === 'PESERTA':
+                statpemenang = '<span class="badge badge-warning space-right">'+item.status_pemenang+'</span>';
+                break;
+              case item.status_pemenang === 'PEMENANG':
+                statpemenang = '<span class="badge badge-success space-right">'+item.status_pemenang+'</span>';
+                break;
+              default:
+                statpemenang = '-';
+            }
             return `<tr>
                 <td data-label="#">${num+((props.pageNow-1)*props.itemPerPage)}</td>
                 <td data-label="Kode">${item.kode}</td>
@@ -49,7 +52,7 @@ var app = new Reef('#app', {
                 <td data-label="HPS">${item.hps}</td>
                 <td data-label="Tanggal Update">${moment(item.modified_date).format('DD MMM YYYY HH:mm')}</td>
                 <td data-label="Link"><a href="${item.url_tender_link}/${item.kode}/pengumumanlelang" class="btn btn-b btn-sm smooth" target="_blank" rel="nofollow noopener">Cek Paket</a></td>
-                <td data-label="Pemenang">${(item.nama_pemenang?item.nama_pemenang+'<br>'+item.npwp_pemenang:'-')}</td>
+                <td data-label="Status Tender">${statpemenang}</td>
             </tr>`;
             }).join('')}
         </tbody>

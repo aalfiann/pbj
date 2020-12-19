@@ -321,9 +321,24 @@ var tender = new Reef('#tender', {
   },
   template: function template(props) {
     if (props.table.length > 0) {
-      return "".concat(props.company ? "<p>Tender yang pernah diikuti oleh <b>".concat(props.company, "</b></p><hr>") : '', "<table class=\"table space-top\">\n          <thead>\n              <tr>\n              <th>#</th>\n              <th>Kode</th>\n              <th>Nama Paket</th>\n              <th>Instansi</th>\n              <th>Tahap</th>\n              <th>HPS</th>\n              <th>Tanggal Update</th>\n              <th>Link</th>\n              <th>Pemenang</th>\n              </tr>\n          </thead>\n          <tbody>\n              ").concat(props.table.map(function (item, index) {
+      return "".concat(props.company ? "<p>Tender yang pernah diikuti oleh <b>".concat(props.company, "</b></p><hr>") : '', "<table class=\"table space-top\">\n          <thead>\n              <tr>\n              <th>#</th>\n              <th>Kode</th>\n              <th>Nama Paket</th>\n              <th>Instansi</th>\n              <th>Tahap</th>\n              <th>HPS</th>\n              <th>Tanggal Update</th>\n              <th>Link</th>\n              <th>Status Tender</th>\n              </tr>\n          </thead>\n          <tbody>\n              ").concat(props.table.map(function (item, index) {
         item.modified_date = item.modified_date.replaceAll('&#58;', ':');
-        return "<tr>\n                  <td data-label=\"#\">".concat(index + 1, "</td>\n                  <td data-label=\"Kode\">").concat(item.kode, "</td>\n                  <td data-label=\"Nama Paket\">").concat(item.tender_label ? '<span class="badge badge-warning space-right">' + item.tender_label + '</span>' : '').concat(item.nama_paket, "</td>\n                  <td data-label=\"Instansi\">").concat(item.instansi, "</td>\n                  <td data-label=\"Tahap\">").concat(item.tahap, "</td>\n                  <td data-label=\"HPS\">").concat(item.hps, "</td>\n                  <td data-label=\"Tanggal Update\">").concat(moment(item.modified_date).format('DD MMM YYYY HH:mm'), "</td>\n                  <td data-label=\"Link\"><a href=\"").concat(item.url_tender_link, "/").concat(item.kode, "/pengumumanlelang\" class=\"btn btn-b btn-sm smooth\" target=\"_blank\" rel=\"nofollow noopener\">Cek Paket</a></td>\n                  <td data-label=\"Pemenang\">").concat(item.nama_pemenang ? item.nama_pemenang + '<br>' + item.npwp_pemenang : '-', "</td>\n              </tr>");
+        var statpemenang = '';
+
+        switch (true) {
+          case item.status_pemenang === 'PESERTA':
+            statpemenang = '<span class="badge badge-warning space-right">' + item.status_pemenang + '</span>';
+            break;
+
+          case item.status_pemenang === 'PEMENANG':
+            statpemenang = '<span class="badge badge-success space-right">' + item.status_pemenang + '</span>';
+            break;
+
+          default:
+            statpemenang = '-';
+        }
+
+        return "<tr>\n                  <td data-label=\"#\">".concat(index + 1, "</td>\n                  <td data-label=\"Kode\">").concat(item.kode, "</td>\n                  <td data-label=\"Nama Paket\">").concat(item.tender_label ? '<span class="badge badge-warning space-right">' + item.tender_label + '</span>' : '').concat(item.nama_paket, "</td>\n                  <td data-label=\"Instansi\">").concat(item.instansi, "</td>\n                  <td data-label=\"Tahap\">").concat(item.tahap, "</td>\n                  <td data-label=\"HPS\">").concat(item.hps, "</td>\n                  <td data-label=\"Tanggal Update\">").concat(moment(item.modified_date).format('DD MMM YYYY HH:mm'), "</td>\n                  <td data-label=\"Link\"><a href=\"").concat(item.url_tender_link, "/").concat(item.kode, "/pengumumanlelang\" class=\"btn btn-b btn-sm smooth\" target=\"_blank\" rel=\"nofollow noopener\">Cek Paket</a></td>\n                  <td data-label=\"Status Tender\">").concat(statpemenang, "</td>\n              </tr>");
       }).join(''), "\n          </tbody>\n          </table>");
     } else {
       return props.message ? '<div class="row"><message class="danger">' + props.message + '</message></div>' : '';
