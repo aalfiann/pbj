@@ -1,5 +1,13 @@
 "use strict";
 
+// Replace All
+String.prototype.replaceAll = function(strReplace, strWith) {
+  // See http://stackoverflow.com/a/3561711/556609
+  var esc = strReplace.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+  var reg = new RegExp(esc, 'ig');
+  return this.replace(reg, strWith);
+};
+
 // Reactive UI
 var app = new Reef('#app', {
     data: {
@@ -27,6 +35,7 @@ var app = new Reef('#app', {
                 <th>Bentuk Usaha</th>
                 <th>Jenis Usaha</th>
                 <th>Detail</th>
+                <th>Tender</th>
               </tr>
           </thead>
           <tbody>
@@ -60,7 +69,8 @@ var app = new Reef('#app', {
                   <td data-label="Website">${(item.bu_website)?item.bu_website:'-'}</td>
                   <td data-label="Bentuk Usaha">${(item.bu_bentuk_badan_usaha)?item.bu_bentuk_badan_usaha:'-'}</td>
                   <td data-label="Jenis Usaha">${(item.bu_jenis_badan_usaha)?item.bu_jenis_badan_usaha:'-'}</td>
-                  <td data-label="Detail">${item.bu_status_registrasi === 'Tidak Diketemukan'? '-' : `<a href="javascript:void(0)" class="btn btn-b btn-sm smooth" onclick="showPerusahaan('${item.npwp}')">Show</a>`}</td>
+                  <td data-label="Detail">${item.bu_status_registrasi === 'Tidak Diketemukan'? '-' : `<a href="javascript:void(0)" class="btn btn-a btn-sm smooth" onclick="showPerusahaan('${item.npwp}')">Detail</a>`}</td>
+                  <td data-label="Tender">${item.bu_status_registrasi === 'Tidak Diketemukan'? '-' : `<a href="javascript:void(0)" class="btn btn-b btn-sm smooth" onclick="showTender('${item.npwp}','${item.nama_peserta}')">Tender</a>`}</td>
               </tr>`;
               }).join('')}
           </tbody>
@@ -246,7 +256,6 @@ function jumpPage() {
       npwp: npwp
     })
     .then(function(response, xhr) {
-      console.log(response.data);
       if(response.sts_res === 'true' && response.data.length > 0) {
         detail.data.npwp = npwp;
         detail.data.kualifikasi = response.data[0];
@@ -257,38 +266,144 @@ function jumpPage() {
     })
     .catch(function(response, xhr) {
       console.log(xhr.responseText);
+    }) 
+  }
+
+  function showTender(npwp,company) {
+    ajax({
+      headers: {
+        'pbj-api-key':'ngupas@2020',
+        'content-type':'application/json'
+      }
     })
-    
+    .post('@{CONF.baseUrl}/tender/datatender', {
+      katakunci:Dom.id('search').value,
+      sortby:0,
+      sortbyasc:0,
+      filterby:[3],
+      filter:[npwp],
+      page:1,
+      limit:1000
+    })
+    .then(function(response, xhr) {
+      if(response.sts_res === 'true' && response.data.length > 0) {
+        tender.data.name = 'tender';
+        tender.data.company = company;
+        tender.data.table = response.data;
+      } else {
+       tender.data.message = response.sts_des; 
+      }
+    })
+    .catch(function(response, xhr) {
+      console.log(xhr.responseText);
+    })
   }
 
   document.addEventListener('render', function (event) {
 
-    // Only run for elements with the #app ID
-    if (!event.target.matches('#detail')) return;
-  
-    // Log the data at the time of render
-    if(event.detail.npwp) {
-      var modal = new tingle.modal({
-        footer: true,
-        stickyFooter: false,
-        closeMethods: ['overlay', 'button', 'escape'],
-        beforeOpen: function() {
-          Dom.id('detail').style.display = 'inline';
-          modal.setContent(Dom.id('detail').innerHTML);
-        },
-        onOpen: function() {
-          console.log('OPENED! '+event.detail.npwp);
-          Dom.id('detail').innerHTML = '';
-        },
-        onClose: function() {
-          detail.data.npwp = '';
-          modal.destroy();
-        }
-      });
-      modal.open();
+    // Only run for elements with the #detail ID
+    if (event.target.matches('#detail')) {
+      // Log the data at the time of render
+      if(event.detail.npwp) {
+        var modal = new tingle.modal({
+          footer: true,
+          stickyFooter: false,
+          closeMethods: ['overlay', 'button', 'escape'],
+          beforeOpen: function() {
+            Dom.id('detail').style.display = 'inline';
+            modal.setContent(Dom.id('detail').innerHTML);
+          },
+          onOpen: function() {
+            console.log('OPENED! '+event.detail.npwp);
+            Dom.id('detail').innerHTML = '';
+          },
+          onClose: function() {
+            detail.data.npwp = '';
+            modal.destroy();
+          }
+        });
+        modal.open();
+      }
     }
+
+    // Only run for elements with the #app ID
+    if (event.target.matches('#tender')) {
+      // Log the data at the time of render
+      if(event.detail.name === 'tender') {
+        var modaltender = new tingle.modal({
+          footer: true,
+          stickyFooter: false,
+          closeMethods: ['overlay', 'button', 'escape'],
+          beforeOpen: function() {
+            Dom.id('tender').style.display = 'inline';
+            modaltender.setContent(Dom.id('tender').innerHTML);
+          },
+          onOpen: function() {
+            console.log('OPENED! '+event.detail.name);
+            Dom.id('tender').innerHTML = '';
+          },
+          onClose: function() {
+            tender.data.name = '';
+            tender.data.company = '';
+            tender.data.table = [];
+            tender.data.message = '';
+            Dom.id('tender').innerHTML = '';
+            modaltender.destroy();
+          }
+        });
+        modaltender.open();
+      }
+    }
+
   
   }, false);
+
+  var tender = new Reef('#tender', {
+    data:{
+      name: '',
+      company: '',
+      npwp: '',
+      table: [],
+      message: ''
+    },
+    template: function(props) {
+      if(props.table.length > 0) {
+        return `${(props.company?`<p>Tender yang pernah diikuti oleh <b>${props.company}</b></p><hr>`:'')}<table class="table space-top">
+          <thead>
+              <tr>
+              <th>#</th>
+              <th>Kode</th>
+              <th>Nama Paket</th>
+              <th>Instansi</th>
+              <th>Tahap</th>
+              <th>HPS</th>
+              <th>Tanggal Update</th>
+              <th>Link</th>
+              <th>Pemenang</th>
+              </tr>
+          </thead>
+          <tbody>
+              ${props.table.map(function(item, index) {
+              item.modified_date = item.modified_date.replaceAll('&#58;',':')
+              return `<tr>
+                  <td data-label="#">${(index+1)}</td>
+                  <td data-label="Kode">${item.kode}</td>
+                  <td data-label="Nama Paket">${(item.tender_label) ? '<span class="badge badge-warning space-right">'+item.tender_label+'</span>': ''}${item.nama_paket}</td>
+                  <td data-label="Instansi">${item.instansi}</td>
+                  <td data-label="Tahap">${item.tahap}</td>
+                  <td data-label="HPS">${item.hps}</td>
+                  <td data-label="Tanggal Update">${moment(item.modified_date).format('DD MMM YYYY HH:mm')}</td>
+                  <td data-label="Link"><a href="${item.url_tender_link}/${item.kode}/pengumumanlelang" class="btn btn-b btn-sm smooth" target="_blank" rel="nofollow noopener">Cek Paket</a></td>
+                  <td data-label="Pemenang">${(item.nama_pemenang?item.nama_pemenang+'<br>'+item.npwp_pemenang:'-')}</td>
+              </tr>`;
+              }).join('')}
+          </tbody>
+          </table>`;
+      } else {
+        return (props.message) ? '<div class="row"><message class="danger">'+props.message+'</message></div>' : '';
+      }
+    }
+  });
 
   var detail = new Reef('#detail', {
     data: {
