@@ -21,7 +21,7 @@ var app = new Reef('#app', {
   },
   template: function template(props) {
     if (props.table.length > 0) {
-      return "<table class=\"table space-top\">\n          <thead>\n              <tr>\n                <th>#</th>\n                <th>Status</th>\n                <th>NPWP</th>\n                <th>Nama Perusahan</th>\n                <th>Alamat</th>\n                <th>Email</th>\n                <th>Website</th>\n                <th>Bentuk Usaha</th>\n                <th>Jenis Usaha</th>\n                <th>Detail</th>\n                <th>Tender</th>\n              </tr>\n          </thead>\n          <tbody>\n              ".concat(props.table.map(function (item, index) {
+      return "<table id=\"perusahaan\" class=\"table space-top\">\n          <thead>\n              <tr>\n                <th>#</th>\n                <th>Status</th>\n                <th>NPWP</th>\n                <th>Nama Perusahan</th>\n                <th>Alamat</th>\n                <th>Email</th>\n                <th>Website</th>\n                <th>Bentuk Usaha</th>\n                <th>Jenis Usaha</th>\n                <th>Detail</th>\n                <th>Tender</th>\n              </tr>\n          </thead>\n          <tbody>\n              ".concat(props.table.map(function (item, index) {
         var num = index + 1;
         var readdress = '-';
 
@@ -47,8 +47,8 @@ var app = new Reef('#app', {
             status = '<span class="badge badge-success space-right">' + item.bu_status_registrasi + '</span>';
         }
 
-        return "<tr>\n                  <td data-label=\"#\">".concat(num + (props.pageNow - 1) * props.itemPerPage, "</td>\n                  <td data-label=\"Status\">").concat(status, "</td>\n                  <td data-label=\"NPWP\">").concat(item.npwp, "</td>\n                  <td data-label=\"Nama Perusahaan\">").concat(item.nama_peserta ? item.nama_peserta : '-', "</td>\n                  <td data-label=\"Alamat\">").concat(readdress, "</td>\n                  <td data-label=\"Email\">").concat(item.bu_email ? item.bu_email : '-', "</td>\n                  <td data-label=\"Website\">").concat(item.bu_website ? item.bu_website : '-', "</td>\n                  <td data-label=\"Bentuk Usaha\">").concat(item.bu_bentuk_badan_usaha ? item.bu_bentuk_badan_usaha : '-', "</td>\n                  <td data-label=\"Jenis Usaha\">").concat(item.bu_jenis_badan_usaha ? item.bu_jenis_badan_usaha : '-', "</td>\n                  <td data-label=\"Detail\">").concat(item.bu_status_registrasi === 'Tidak Diketemukan' ? '-' : "<a href=\"javascript:void(0)\" class=\"btn btn-a btn-sm smooth\" onclick=\"showPerusahaan('".concat(item.npwp, "')\">Detail</a>"), "</td>\n                  <td data-label=\"Tender\">").concat(item.bu_status_registrasi === 'Tidak Diketemukan' ? '-' : "<a href=\"javascript:void(0)\" class=\"btn btn-b btn-sm smooth\" onclick=\"showTender('".concat(item.npwp, "','").concat(item.nama_peserta, "')\">Tender</a>"), "</td>\n              </tr>");
-      }).join(''), "\n          </tbody>\n          </table>\n          <div class=\"row\">\n          <span class=\"pull-right\" style=\"margin-top:10px;\">Halaman ").concat(props.pageNow, " dari ").concat(props.totalPage, "</span>\n          <span class=\"pull-left\">\n              Page \n              <input id=\"jumpPage\" type=\"number\" class=\"smooth space-left space-right\" value=\"").concat(props.pageNow, "\"><span onclick=\"jumpPage()\" class=\"btn btn-a btn-sm smooth space-right\">GO</span>\n              <button onclick=\"prevPage()\" class=\"btn btn-sm smooth space-right\"><i class=\"mdi mdi-arrow-left-bold space-right\"></i> Prev</button>\n              <button onclick=\"nextPage()\" class=\"btn btn-sm smooth\">Next <i class=\"mdi mdi-arrow-right-bold space-left\"></i></button>\n          </span>\n          </div>");
+        return "<tr>\n                  <td data-label=\"#\">".concat(num + (props.pageNow - 1) * props.itemPerPage, "</td>\n                  <td data-label=\"Status\">").concat(status, "</td>\n                  <td data-label=\"NPWP\">").concat(item.npwp, "</td>\n                  <td data-label=\"Nama Perusahaan\">").concat(item.nama_peserta ? item.nama_peserta : '-', "</td>\n                  <td data-label=\"Alamat\">").concat(readdress, "</td>\n                  <td data-label=\"Email\">").concat(item.bu_email ? item.bu_email : '-', "</td>\n                  <td data-label=\"Website\">").concat(item.bu_website ? item.bu_website : '-', "</td>\n                  <td data-label=\"Bentuk Usaha\">").concat(item.bu_bentuk_badan_usaha ? item.bu_bentuk_badan_usaha : '-', "</td>\n                  <td data-label=\"Jenis Usaha\">").concat(item.bu_jenis_badan_usaha ? item.bu_jenis_badan_usaha : '-', "</td>\n                  <td data-label=\"Detail\">").concat(item.bu_status_registrasi === 'Tidak Diketemukan' ? '-' : "<a href=\"javascript:void(0)\" class=\"btn btn-a btn-sm smooth\" onclick=\"showPerusahaan('".concat(item.npwp, "','").concat(item.nama_peserta, "')\">Detail</a>"), "</td>\n                  <td data-label=\"Tender\">").concat(item.bu_status_registrasi === 'Tidak Diketemukan' ? '-' : "<a href=\"javascript:void(0)\" class=\"btn btn-b btn-sm smooth\" onclick=\"showTender('".concat(item.npwp, "','").concat(item.nama_peserta, "')\">Tender</a>"), "</td>\n              </tr>");
+      }).join(''), "\n          </tbody>\n          </table>\n          <div class=\"row\">\n          <span class=\"pull-right\" style=\"margin-top:10px;\">Halaman ").concat(props.pageNow, " dari ").concat(props.totalPage, "</span>\n          <span class=\"pull-left\">\n              Page \n              <input id=\"jumpPage\" type=\"number\" class=\"smooth space-left space-right\" value=\"").concat(props.pageNow, "\"><span onclick=\"jumpPage()\" class=\"btn btn-a btn-sm smooth space-right\">GO</span>\n              <button onclick=\"prevPage()\" class=\"btn btn-sm smooth space-right\"><i class=\"mdi mdi-arrow-left-bold space-right\"></i> Prev</button>\n              <button onclick=\"nextPage()\" class=\"btn btn-sm smooth\">Next <i class=\"mdi mdi-arrow-right-bold space-left\"></i></button>\n              <button onclick=\"export_csv('perusahaan','export_perusahaan_halaman_").concat(props.pageNow, ".csv')\" class=\"btn btn-c btn-sm smooth\">Export CSV</button>\n          </span>\n          </div>");
     } else {
       return props.message ? '<div class="row"><message class="danger">' + props.message + '</message></div>' : '';
     }
@@ -208,7 +208,7 @@ function _getDataFilterBy() {
   });
 }
 
-function showPerusahaan(npwp) {
+function showPerusahaan(npwp, name) {
   ajax({
     headers: {
       'pbj-api-key': 'ngupas@2020',
@@ -219,6 +219,7 @@ function showPerusahaan(npwp) {
   }).then(function (response, xhr) {
     if (response.sts_res === 'true' && response.data.length > 0) {
       detail.data.npwp = npwp;
+      detail.data.name = name;
       detail.data.kualifikasi = response.data[0];
       detail.data.keuangan = response.data[1];
       detail.data.pengurus = response.data[2];
@@ -321,7 +322,7 @@ var tender = new Reef('#tender', {
   },
   template: function template(props) {
     if (props.table.length > 0) {
-      return "".concat(props.company ? "<p>Tender yang pernah diikuti oleh <b>".concat(props.company, "</b></p><hr>") : '', "<table class=\"table space-top\">\n          <thead>\n              <tr>\n              <th>#</th>\n              <th>Kode</th>\n              <th>Nama Paket</th>\n              <th>Instansi</th>\n              <th>Tahap</th>\n              <th>HPS</th>\n              <th>Tanggal Update</th>\n              <th>Link</th>\n              <th>Status Tender</th>\n              </tr>\n          </thead>\n          <tbody>\n              ").concat(props.table.map(function (item, index) {
+      return "".concat(props.company ? "<p>Tender yang pernah diikuti oleh <b>".concat(props.company, "</b></p><hr>") : '', "\n        ").concat(props.table.length > 0 ? "<button onclick=\"export_csv('histori-tender','riwayat_tender_".concat(props.npwp, "_").concat(props.company, ".csv')\" class=\"btn btn-c btn-sm smooth\">Export CSV</button>") : '', "\n        <table id=\"histori-tender\" class=\"table space-top\">\n          <thead>\n              <tr>\n              <th>#</th>\n              <th>Kode</th>\n              <th>Nama Paket</th>\n              <th>Instansi</th>\n              <th>Tahap</th>\n              <th>HPS</th>\n              <th>Tanggal Update</th>\n              <th>Link</th>\n              <th>Status Tender</th>\n              </tr>\n          </thead>\n          <tbody>\n              ").concat(props.table.map(function (item, index) {
         item.modified_date = item.modified_date.replaceAll('&#58;', ':');
         var statpemenang = '';
 
@@ -348,6 +349,7 @@ var tender = new Reef('#tender', {
 var detail = new Reef('#detail', {
   data: {
     npwp: '',
+    name: '',
     kualifikasi: [],
     keuangan: [],
     pengurus: [],
@@ -355,13 +357,13 @@ var detail = new Reef('#detail', {
   },
   template: function template(props) {
     if (props.npwp) {
-      return "<div class=\"tab\">\n          <button class=\"tablinks active\" onclick=\"openCity(event, 'klasifikasi')\">Klasifikasi dan Kualisi</button>\n          <button class=\"tablinks\" onclick=\"openCity(event, 'keuangan')\">Keuangan</button>\n          <button class=\"tablinks\" onclick=\"openCity(event, 'pengurus')\">Pengurus</button>\n          <button class=\"tablinks\" onclick=\"openCity(event, 'tenagakerja')\">Tenaga Kerja</button>\n        </div>\n        \n        <div id=\"klasifikasi\" class=\"tabcontent\" style=\"display:block;\">\n          <table class=\"table space-top\">\n            <thead>\n                <tr>\n                  <th>#</th>\n                  <th>Sub Bidang</th>\n                  <th>Kode</th>\n                  <th>Kualifikasi</th>\n                  <th>Tahun</th>\n                  <th>Nilai</th>\n                  <th>Asosiasi</th>\n                  <th>Tgl Permohonan</th>\n                  <th>Tgl Cetak Pertama</th>\n                  <th>Tgl Cetak Perubahan Terakhir</th>\n                  <th>Tgl Registrasi Th2</th>\n                </tr>\n            </thead>\n            <tbody>\n              ".concat(props.kualifikasi.map(function (item, index) {
+      return "<div class=\"tab\">\n          <button class=\"tablinks active\" onclick=\"openCity(event, 'klasifikasi')\">Klasifikasi dan Kualisi</button>\n          <button class=\"tablinks\" onclick=\"openCity(event, 'keuangan')\">Keuangan</button>\n          <button class=\"tablinks\" onclick=\"openCity(event, 'pengurus')\">Pengurus</button>\n          <button class=\"tablinks\" onclick=\"openCity(event, 'tenagakerja')\">Tenaga Kerja</button>\n        </div>\n        \n        <div id=\"klasifikasi\" class=\"tabcontent\" style=\"display:block;\">\n          ".concat(props.kualifikasi.length > 0 ? "<button onclick=\"export_csv('table-klasifikasi','klasifikasi_dan_kualisi_".concat(props.npwp, "_").concat(props.name, ".csv')\" class=\"btn btn-c btn-sm smooth\">Export CSV</button>") : '', "\n          <table id=\"table-klasifikasi\" class=\"table space-top\">\n            <thead>\n                <tr>\n                  <th>#</th>\n                  <th>Sub Bidang</th>\n                  <th>Kode</th>\n                  <th>Kualifikasi</th>\n                  <th>Tahun</th>\n                  <th>Nilai</th>\n                  <th>Asosiasi</th>\n                  <th>Tgl Permohonan</th>\n                  <th>Tgl Cetak Pertama</th>\n                  <th>Tgl Cetak Perubahan Terakhir</th>\n                  <th>Tgl Registrasi Th2</th>\n                </tr>\n            </thead>\n            <tbody>\n              ").concat(props.kualifikasi.map(function (item, index) {
         return "<tr>\n                    <td data-label=\"#\">".concat(index + 1, "</td>\n                    <td data-label=\"Sub Bidang\">").concat(item.bu_klasifikasi_sub_bidang_klasifikasi, "</td>\n                    <td data-label=\"Kode\">").concat(item.bu_klasifikasi_kode, "</td>\n                    <td data-label=\"Kualifikasi\">").concat(item.bu_klasifikasi_kualifikasi, "</td>\n                    <td data-label=\"Tahun\">").concat(item.bu_klasifikasi_tahun, "</td>\n                    <td data-label=\"Nilai\">").concat(item.bu_klasifikasi_nilai, "</td>\n                    <td data-label=\"Asosiasi\">").concat(item.bu_klasifikasi_asosiasi, "</td>\n                    <td data-label=\"Tgl Permohonan\">").concat(item.bu_klasifikasi_tanggal_permohonan, "</td>\n                    <td data-label=\"Tgl Cetak Pertama\">").concat(item.bu_klasifikasi_tanggal_cetak_pertama, "</td>\n                    <td data-label=\"Tgl Cetak Perubahan Terakhir\">").concat(item.bu_klasifikasi_tanggal_cetak_perubahan_terakhir, "</td>\n                    <td data-label=\"Tgl Registrasi Th2\">").concat(item.bu_klasifikasi_tanggal_registrasi_tahun_2 ? item.bu_klasifikasi_tanggal_registrasi_tahun_2 : '-', "</td>\n                  </tr>");
-      }).join(''), "\n            </tbody>\n          </table>\n        </div>\n        \n        <div id=\"keuangan\" class=\"tabcontent\">\n          <table class=\"table space-top\">\n            <thead>\n                <tr>\n                  <th>#</th>\n                  <th>Nama</th>\n                  <th>KTP</th>\n                  <th>Alamat</th>\n                  <th>Jumlah Saham</th>\n                  <th>Satuan Saham</th>\n                  <th>Modal Dasar</th>\n                  <th>Modal Setor</th>\n                </tr>\n            </thead>\n            <tbody>\n              ").concat(props.keuangan.map(function (item, index) {
+      }).join(''), "\n            </tbody>\n          </table>\n        </div>\n        \n        <div id=\"keuangan\" class=\"tabcontent\">\n          ").concat(props.keuangan.length > 0 ? "<button onclick=\"export_csv('table-keuangan','keuangan_".concat(props.npwp, "_").concat(props.name, ".csv')\" class=\"btn btn-c btn-sm smooth\">Export CSV</button>") : '', "\n          <table id=\"table-keuangan\" class=\"table space-top\">\n            <thead>\n                <tr>\n                  <th>#</th>\n                  <th>Nama</th>\n                  <th>KTP</th>\n                  <th>Alamat</th>\n                  <th>Jumlah Saham</th>\n                  <th>Satuan Saham</th>\n                  <th>Modal Dasar</th>\n                  <th>Modal Setor</th>\n                </tr>\n            </thead>\n            <tbody>\n              ").concat(props.keuangan.map(function (item, index) {
         return "<tr>\n                    <td data-label=\"#\">".concat(index + 1, "</td>\n                    <td data-label=\"Nama\">").concat(item.bu_keuangan_nama, "</td>\n                    <td data-label=\"KTP\">").concat(item.bu_keuangan_ktp, "</td>\n                    <td data-label=\"Alamat\">").concat(item.bu_keuangan_alamat, "</td>\n                    <td data-label=\"Jumlah Saham\">").concat(item.bu_keuangan_jumlah_saham, "</td>\n                    <td data-label=\"Satuan Saham\">").concat(item.bu_keuangan_satuan_saham, "</td>\n                    <td data-label=\"Modal Dasar\">").concat(item.bu_keuangan_modal_dasar, "</td>\n                    <td data-label=\"Modal Setor\">").concat(item.bu_keuangan_modal_setor, "</td>\n                  </tr>");
-      }).join(''), "\n            </tbody>\n          </table>\n        </div>\n        \n        <div id=\"pengurus\" class=\"tabcontent\">\n          <table class=\"table space-top\">\n            <thead>\n                <tr>\n                  <th>#</th>\n                  <th>Nama</th>\n                  <th>Tgl Lahir</th>\n                  <th>Alamat</th>\n                  <th>KTP</th>\n                  <th>Jabatan</th>\n                  <th>Pendidikan</th>\n                </tr>\n            </thead>\n            <tbody>\n              ").concat(props.pengurus.map(function (item, index) {
+      }).join(''), "\n            </tbody>\n          </table>\n        </div>\n        \n        <div id=\"pengurus\" class=\"tabcontent\">\n          ").concat(props.pengurus.length > 0 ? "<button onclick=\"export_csv('table-pengurus','pengurus_".concat(props.npwp, "_").concat(props.name, ".csv')\" class=\"btn btn-c btn-sm smooth\">Export CSV</button>") : '', "\n          <table id=\"table-pengurus\" class=\"table space-top\">\n            <thead>\n                <tr>\n                  <th>#</th>\n                  <th>Nama</th>\n                  <th>Tgl Lahir</th>\n                  <th>Alamat</th>\n                  <th>KTP</th>\n                  <th>Jabatan</th>\n                  <th>Pendidikan</th>\n                </tr>\n            </thead>\n            <tbody>\n              ").concat(props.pengurus.map(function (item, index) {
         return "<tr>\n                    <td data-label=\"#\">".concat(index + 1, "</td>\n                    <td data-label=\"Nama\">").concat(item.bu_pengurus_nama, "</td>\n                    <td data-label=\"Tgl Lahir\">").concat(item.bu_pengurus_tanggal_lahir, "</td>\n                    <td data-label=\"Alamat\">").concat(item.bu_pengurus_alamat, "</td>\n                    <td data-label=\"KTP\">").concat(item.bu_pengurus_ktp, "</td>\n                    <td data-label=\"Jabatan\">").concat(item.bu_pengurus_jabatan, "</td>\n                    <td data-label=\"Pendidikan\">").concat(item.bu_pengurus_pendidikan, "</td>\n                  </tr>");
-      }).join(''), "\n            </tbody>\n          </table>\n        </div>\n        \n        <div id=\"tenagakerja\" class=\"tabcontent\">\n          <table class=\"table space-top\">\n            <thead>\n                <tr>\n                  <th>#</th>\n                  <th>Nama</th>\n                  <th>Tgl Lahir</th>\n                  <th>KTP</th>\n                  <th>Pendidikan</th>\n                  <th>No Registrasi</th>\n                  <th>Jenis Sertifikat</th>\n                  <th>Link</th>\n                </tr>\n            </thead>\n            <tbody>\n              ").concat(props.tenagakerja.map(function (item, index) {
+      }).join(''), "\n            </tbody>\n          </table>\n        </div>\n        \n        <div id=\"tenagakerja\" class=\"tabcontent\">\n          ").concat(props.tenagakerja.length > 0 ? "<button onclick=\"export_csv('table-tenagakerja','tenaga_kerja_".concat(props.npwp, "_").concat(props.name, ".csv')\" class=\"btn btn-c btn-sm smooth\">Export CSV</button>") : '', "\n          <table id=\"table-tenagakerja\" class=\"table space-top\">\n            <thead>\n                <tr>\n                  <th>#</th>\n                  <th>Nama</th>\n                  <th>Tgl Lahir</th>\n                  <th>KTP</th>\n                  <th>Pendidikan</th>\n                  <th>No Registrasi</th>\n                  <th>Jenis Sertifikat</th>\n                  <th>Link</th>\n                </tr>\n            </thead>\n            <tbody>\n              ").concat(props.tenagakerja.map(function (item, index) {
         return "<tr>\n                    <td data-label=\"#\">".concat(index + 1, "</td>\n                    <td data-label=\"Nama\">").concat(item.bu_tenaga_kerja_nama, "</td>\n                    <td data-label=\"Tgl Lahir\">").concat(item.bu_tenaga_kerja_tanggal_lahir, "</td>\n                    <td data-label=\"KTP\">").concat(item.bu_tenaga_kerja_ktp, "</td>\n                    <td data-label=\"Pendidikan\">").concat(item.bu_tenaga_kerja_pendidikan, "</td>\n                    <td data-label=\"No Registrasi\">").concat(item.bu_tenaga_kerja_no_registrasi, "</td>\n                    <td data-label=\"Jenis Sertifikat\">").concat(item.bu_tenaga_kerja_jenis_sertifikat, "</td>\n                    <td data-label=\"Link\"><a href=\"").concat(item.bu_tenaga_kerja_detail_link, "\" class=\"btn btn-b btn-sm smooth\" target=\"_blank\" rel=\"nofollow noopener\">Cek</a></td>\n                  </tr>");
       }).join(''), "\n            </tbody>\n          </table>\n        </div>");
     } else {
@@ -387,4 +389,42 @@ function openCity(evt, cityName) {
 
   document.getElementById(cityName).style.display = "block";
   evt.currentTarget.className += " active";
+} // export data
+
+
+function export_csv(table_id, filename) {
+  var separator = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : ',';
+  // Select rows from table_id
+  var rows = document.querySelectorAll('table#' + table_id + ' tr'); // Construct csv
+
+  var csv = [];
+
+  for (var i = 0; i < rows.length; i++) {
+    var row = [],
+        cols = rows[i].querySelectorAll('td, th');
+
+    for (var j = 0; j < cols.length; j++) {
+      // Clean innertext to remove multiple spaces and jumpline (break csv)
+      var data = cols[j].innerText.replace(/(\r\n|\n|\r)/gm, '').replace(/(\s\s)/gm, ' '); // Escape double-quote with double-double-quote (see https://stackoverflow.com/questions/17808511/properly-escape-a-double-quote-in-csv)
+
+      data = data.replace(/"/g, '""'); // Push escaped string
+
+      row.push('"' + data + '"');
+    }
+
+    csv.push(row.join(separator));
+  }
+
+  var csv_string = csv.join('\n'); // Download it
+
+  filename = filename === undefined ? 'export_' + table_id + '_' + new Date().toLocaleDateString() + '.csv' : filename; // var filename = 'export_' + table_id + '_' + new Date().toLocaleDateString() + '.csv';
+
+  var link = document.createElement('a');
+  link.style.display = 'none';
+  link.setAttribute('target', '_blank');
+  link.setAttribute('href', 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv_string));
+  link.setAttribute('download', filename);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 }

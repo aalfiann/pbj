@@ -22,7 +22,7 @@ var app = new Reef('#app', {
     },
     template: function (props) {
       if(props.table.length > 0) {
-        return `<table class="table space-top">
+        return `<table id="perusahaan" class="table space-top">
           <thead>
               <tr>
                 <th>#</th>
@@ -69,7 +69,7 @@ var app = new Reef('#app', {
                   <td data-label="Website">${(item.bu_website)?item.bu_website:'-'}</td>
                   <td data-label="Bentuk Usaha">${(item.bu_bentuk_badan_usaha)?item.bu_bentuk_badan_usaha:'-'}</td>
                   <td data-label="Jenis Usaha">${(item.bu_jenis_badan_usaha)?item.bu_jenis_badan_usaha:'-'}</td>
-                  <td data-label="Detail">${item.bu_status_registrasi === 'Tidak Diketemukan'? '-' : `<a href="javascript:void(0)" class="btn btn-a btn-sm smooth" onclick="showPerusahaan('${item.npwp}')">Detail</a>`}</td>
+                  <td data-label="Detail">${item.bu_status_registrasi === 'Tidak Diketemukan'? '-' : `<a href="javascript:void(0)" class="btn btn-a btn-sm smooth" onclick="showPerusahaan('${item.npwp}','${item.nama_peserta}')">Detail</a>`}</td>
                   <td data-label="Tender">${item.bu_status_registrasi === 'Tidak Diketemukan'? '-' : `<a href="javascript:void(0)" class="btn btn-b btn-sm smooth" onclick="showTender('${item.npwp}','${item.nama_peserta}')">Tender</a>`}</td>
               </tr>`;
               }).join('')}
@@ -82,6 +82,7 @@ var app = new Reef('#app', {
               <input id="jumpPage" type="number" class="smooth space-left space-right" value="${props.pageNow}"><span onclick="jumpPage()" class="btn btn-a btn-sm smooth space-right">GO</span>
               <button onclick="prevPage()" class="btn btn-sm smooth space-right"><i class="mdi mdi-arrow-left-bold space-right"></i> Prev</button>
               <button onclick="nextPage()" class="btn btn-sm smooth">Next <i class="mdi mdi-arrow-right-bold space-left"></i></button>
+              <button onclick="export_csv('perusahaan','export_perusahaan_halaman_${props.pageNow}.csv')" class="btn btn-c btn-sm smooth">Export CSV</button>
           </span>
           </div>`;
       } else {
@@ -245,7 +246,7 @@ function jumpPage() {
     })
   }
 
-  function showPerusahaan(npwp) {
+  function showPerusahaan(npwp, name) {
     ajax({
       headers: {
         'pbj-api-key':'ngupas@2020',
@@ -258,6 +259,7 @@ function jumpPage() {
     .then(function(response, xhr) {
       if(response.sts_res === 'true' && response.data.length > 0) {
         detail.data.npwp = npwp;
+        detail.data.name = name;
         detail.data.kualifikasi = response.data[0];
         detail.data.keuangan = response.data[1];
         detail.data.pengurus = response.data[2];
@@ -368,7 +370,9 @@ function jumpPage() {
     },
     template: function(props) {
       if(props.table.length > 0) {
-        return `${(props.company?`<p>Tender yang pernah diikuti oleh <b>${props.company}</b></p><hr>`:'')}<table class="table space-top">
+        return `${(props.company?`<p>Tender yang pernah diikuti oleh <b>${props.company}</b></p><hr>`:'')}
+        ${(props.table.length > 0 ? `<button onclick="export_csv('histori-tender','riwayat_tender_${props.npwp}_${props.company}.csv')" class="btn btn-c btn-sm smooth">Export CSV</button>`:'')}
+        <table id="histori-tender" class="table space-top">
           <thead>
               <tr>
               <th>#</th>
@@ -419,6 +423,7 @@ function jumpPage() {
   var detail = new Reef('#detail', {
     data: {
       npwp: '',
+      name: '',
       kualifikasi: [],
       keuangan: [],
       pengurus: [],
@@ -434,7 +439,8 @@ function jumpPage() {
         </div>
         
         <div id="klasifikasi" class="tabcontent" style="display:block;">
-          <table class="table space-top">
+          ${(props.kualifikasi.length > 0 ? `<button onclick="export_csv('table-klasifikasi','klasifikasi_dan_kualisi_${props.npwp}_${props.name}.csv')" class="btn btn-c btn-sm smooth">Export CSV</button>`:'')}
+          <table id="table-klasifikasi" class="table space-top">
             <thead>
                 <tr>
                   <th>#</th>
@@ -471,7 +477,8 @@ function jumpPage() {
         </div>
         
         <div id="keuangan" class="tabcontent">
-          <table class="table space-top">
+          ${(props.keuangan.length > 0 ? `<button onclick="export_csv('table-keuangan','keuangan_${props.npwp}_${props.name}.csv')" class="btn btn-c btn-sm smooth">Export CSV</button>` : '')}
+          <table id="table-keuangan" class="table space-top">
             <thead>
                 <tr>
                   <th>#</th>
@@ -502,7 +509,8 @@ function jumpPage() {
         </div>
         
         <div id="pengurus" class="tabcontent">
-          <table class="table space-top">
+          ${(props.pengurus.length > 0 ? `<button onclick="export_csv('table-pengurus','pengurus_${props.npwp}_${props.name}.csv')" class="btn btn-c btn-sm smooth">Export CSV</button>` : '')}
+          <table id="table-pengurus" class="table space-top">
             <thead>
                 <tr>
                   <th>#</th>
@@ -531,7 +539,8 @@ function jumpPage() {
         </div>
         
         <div id="tenagakerja" class="tabcontent">
-          <table class="table space-top">
+          ${(props.tenagakerja.length > 0 ? `<button onclick="export_csv('table-tenagakerja','tenaga_kerja_${props.npwp}_${props.name}.csv')" class="btn btn-c btn-sm smooth">Export CSV</button>` : '')}
+          <table id="table-tenagakerja" class="table space-top">
             <thead>
                 <tr>
                   <th>#</th>
@@ -579,4 +588,36 @@ function jumpPage() {
     }
     document.getElementById(cityName).style.display = "block";
     evt.currentTarget.className += " active";
+  }
+
+  // export data
+  function export_csv(table_id, filename, separator = ',') {
+    // Select rows from table_id
+    var rows = document.querySelectorAll('table#' + table_id + ' tr');
+    // Construct csv
+    var csv = [];
+    for (var i = 0; i < rows.length; i++) {
+        var row = [], cols = rows[i].querySelectorAll('td, th');
+        for (var j = 0; j < cols.length; j++) {
+            // Clean innertext to remove multiple spaces and jumpline (break csv)
+            var data = cols[j].innerText.replace(/(\r\n|\n|\r)/gm, '').replace(/(\s\s)/gm, ' ')
+            // Escape double-quote with double-double-quote (see https://stackoverflow.com/questions/17808511/properly-escape-a-double-quote-in-csv)
+            data = data.replace(/"/g, '""');
+            // Push escaped string
+            row.push('"' + data + '"');
+        }
+        csv.push(row.join(separator));
+    }
+    var csv_string = csv.join('\n');
+    // Download it
+    filename = (filename === undefined) ? 'export_' + table_id + '_' + new Date().toLocaleDateString() + '.csv' : filename;
+    // var filename = 'export_' + table_id + '_' + new Date().toLocaleDateString() + '.csv';
+    var link = document.createElement('a');
+    link.style.display = 'none';
+    link.setAttribute('target', '_blank');
+    link.setAttribute('href', 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv_string));
+    link.setAttribute('download', filename);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   }

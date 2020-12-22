@@ -13,7 +13,7 @@ var app = new Reef('#app', {
   },
   template: function template(props) {
     if (props.table.length > 0) {
-      return "<table class=\"table space-top\">\n        <thead>\n            <tr>\n            <th>#</th>\n            <th>Kode</th>\n            <th>Nama Paket</th>\n            <th>Instansi</th>\n            <th>Tahap</th>\n            <th>HPS</th>\n            <th>Tanggal Update</th>\n            <th>Link</th>\n            <th>Status Tender</th>\n            </tr>\n        </thead>\n        <tbody>\n            ".concat(props.table.map(function (item, index) {
+      return "<table id=\"datatable\" class=\"table space-top\">\n        <thead>\n            <tr>\n            <th>#</th>\n            <th>Kode</th>\n            <th>Nama Paket</th>\n            <th>Instansi</th>\n            <th>Tahap</th>\n            <th>HPS</th>\n            <th>Tanggal Update</th>\n            <th>Link</th>\n            <th>Status Tender</th>\n            </tr>\n        </thead>\n        <tbody>\n            ".concat(props.table.map(function (item, index) {
         var num = index + 1;
         item.modified_date = item.modified_date.replaceAll('&#58;', ':');
         var statpemenang = '';
@@ -32,7 +32,7 @@ var app = new Reef('#app', {
         }
 
         return "<tr>\n                <td data-label=\"#\">".concat(num + (props.pageNow - 1) * props.itemPerPage, "</td>\n                <td data-label=\"Kode\">").concat(item.kode, "</td>\n                <td data-label=\"Nama Paket\">").concat(item.tender_label ? '<span class="badge badge-warning space-right">' + item.tender_label + '</span>' : '').concat(item.nama_paket, "</td>\n                <td data-label=\"Instansi\">").concat(item.instansi, "</td>\n                <td data-label=\"Tahap\">").concat(item.tahap, "</td>\n                <td data-label=\"HPS\">").concat(item.hps, "</td>\n                <td data-label=\"Tanggal Update\">").concat(moment(item.modified_date).format('DD MMM YYYY HH:mm'), "</td>\n                <td data-label=\"Link\"><a href=\"").concat(item.url_tender_link, "/").concat(item.kode, "/pengumumanlelang\" class=\"btn btn-b btn-sm smooth\" target=\"_blank\" rel=\"nofollow noopener\">Cek Paket</a></td>\n                <td data-label=\"Status Tender\">").concat(statpemenang, "</td>\n            </tr>");
-      }).join(''), "\n        </tbody>\n        </table>\n        <div class=\"row\">\n        <span class=\"pull-right\" style=\"margin-top:10px;\">Halaman ").concat(props.pageNow, " dari ").concat(props.totalPage, "</span>\n        <span class=\"pull-left\">\n            Page \n            <input id=\"jumpPage\" type=\"number\" class=\"smooth space-left space-right\" value=\"").concat(props.pageNow, "\"><span onclick=\"jumpPage()\" class=\"btn btn-a btn-sm smooth space-right\">GO</span>\n            <button onclick=\"prevPage()\" class=\"btn btn-sm smooth space-right\"><i class=\"mdi mdi-arrow-left-bold space-right\"></i> Prev</button>\n            <button onclick=\"nextPage()\" class=\"btn btn-sm smooth\">Next <i class=\"mdi mdi-arrow-right-bold space-left\"></i></button>\n        </span>\n        </div>");
+      }).join(''), "\n        </tbody>\n        </table>\n        <div class=\"row\">\n        <span class=\"pull-right\" style=\"margin-top:10px;\">Halaman ").concat(props.pageNow, " dari ").concat(props.totalPage, "</span>\n        <span class=\"pull-left\">\n            Page \n            <input id=\"jumpPage\" type=\"number\" class=\"smooth space-left space-right\" value=\"").concat(props.pageNow, "\"><span onclick=\"jumpPage()\" class=\"btn btn-a btn-sm smooth space-right\">GO</span>\n            <button onclick=\"prevPage()\" class=\"btn btn-sm smooth space-right\"><i class=\"mdi mdi-arrow-left-bold space-right\"></i> Prev</button>\n            <button onclick=\"nextPage()\" class=\"btn btn-sm smooth\">Next <i class=\"mdi mdi-arrow-right-bold space-left\"></i></button>\n            <button onclick=\"export_csv('datatable','export_pbj_halaman_").concat(props.pageNow, ".csv')\" class=\"btn btn-c btn-sm smooth\">Export CSV</button>\n        </span>\n        </div>");
     } else {
       return props.message ? '<div class="row"><message class="danger">' + props.message + '</message></div>' : '';
     }
@@ -357,4 +357,42 @@ Dom.id('ifilter').addEventListener('keyup', function (e) {
   }
 }); // load data
 
-_getDataFilterBy();
+_getDataFilterBy(); // export data
+
+
+function export_csv(table_id, filename) {
+  var separator = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : ',';
+  // Select rows from table_id
+  var rows = document.querySelectorAll('table#' + table_id + ' tr'); // Construct csv
+
+  var csv = [];
+
+  for (var i = 0; i < rows.length; i++) {
+    var row = [],
+        cols = rows[i].querySelectorAll('td, th');
+
+    for (var j = 0; j < cols.length; j++) {
+      // Clean innertext to remove multiple spaces and jumpline (break csv)
+      var data = cols[j].innerText.replace(/(\r\n|\n|\r)/gm, '').replace(/(\s\s)/gm, ' '); // Escape double-quote with double-double-quote (see https://stackoverflow.com/questions/17808511/properly-escape-a-double-quote-in-csv)
+
+      data = data.replace(/"/g, '""'); // Push escaped string
+
+      row.push('"' + data + '"');
+    }
+
+    csv.push(row.join(separator));
+  }
+
+  var csv_string = csv.join('\n'); // Download it
+
+  filename = filename === undefined ? 'export_' + table_id + '_' + new Date().toLocaleDateString() + '.csv' : filename; // var filename = 'export_' + table_id + '_' + new Date().toLocaleDateString() + '.csv';
+
+  var link = document.createElement('a');
+  link.style.display = 'none';
+  link.setAttribute('target', '_blank');
+  link.setAttribute('href', 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv_string));
+  link.setAttribute('download', filename);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}

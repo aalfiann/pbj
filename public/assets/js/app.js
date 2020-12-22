@@ -14,7 +14,7 @@ var app = new Reef('#app', {
   },
   template: function (props) {
     if(props.table.length > 0) {
-      return `<table class="table space-top">
+      return `<table id="datatable" class="table space-top">
         <thead>
             <tr>
             <th>#</th>
@@ -64,6 +64,7 @@ var app = new Reef('#app', {
             <input id="jumpPage" type="number" class="smooth space-left space-right" value="${props.pageNow}"><span onclick="jumpPage()" class="btn btn-a btn-sm smooth space-right">GO</span>
             <button onclick="prevPage()" class="btn btn-sm smooth space-right"><i class="mdi mdi-arrow-left-bold space-right"></i> Prev</button>
             <button onclick="nextPage()" class="btn btn-sm smooth">Next <i class="mdi mdi-arrow-right-bold space-left"></i></button>
+            <button onclick="export_csv('datatable','export_pbj_halaman_${props.pageNow}.csv')" class="btn btn-c btn-sm smooth">Export CSV</button>
         </span>
         </div>`;
     } else {
@@ -374,3 +375,35 @@ Dom.id('ifilter').addEventListener('keyup', function(e) {
 
 // load data
 _getDataFilterBy();
+
+// export data
+function export_csv(table_id, filename, separator = ',') {
+  // Select rows from table_id
+  var rows = document.querySelectorAll('table#' + table_id + ' tr');
+  // Construct csv
+  var csv = [];
+  for (var i = 0; i < rows.length; i++) {
+      var row = [], cols = rows[i].querySelectorAll('td, th');
+      for (var j = 0; j < cols.length; j++) {
+          // Clean innertext to remove multiple spaces and jumpline (break csv)
+          var data = cols[j].innerText.replace(/(\r\n|\n|\r)/gm, '').replace(/(\s\s)/gm, ' ')
+          // Escape double-quote with double-double-quote (see https://stackoverflow.com/questions/17808511/properly-escape-a-double-quote-in-csv)
+          data = data.replace(/"/g, '""');
+          // Push escaped string
+          row.push('"' + data + '"');
+      }
+      csv.push(row.join(separator));
+  }
+  var csv_string = csv.join('\n');
+  // Download it
+  filename = (filename === undefined) ? 'export_' + table_id + '_' + new Date().toLocaleDateString() + '.csv' : filename;
+  // var filename = 'export_' + table_id + '_' + new Date().toLocaleDateString() + '.csv';
+  var link = document.createElement('a');
+  link.style.display = 'none';
+  link.setAttribute('target', '_blank');
+  link.setAttribute('href', 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv_string));
+  link.setAttribute('download', filename);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
