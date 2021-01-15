@@ -107,9 +107,9 @@ function insertbadanusahaklasifikasi(bu_id, bu_npwp, bu_klasifikasi_sub_bidang_k
 		var db = DBMS();
 		
 		try {
-			var utkdelete = [bu_npwp];
-			db.query("DELETE FROM dt_badan_usaha_klasifikasi WHERE bu_npwp = $1", utkdelete).callback(function(err, response) {
-				if (err) throw err;
+			//var utkdelete = [bu_npwp];
+			//db.query("DELETE FROM dt_badan_usaha_klasifikasi WHERE bu_npwp = $1", utkdelete).callback(function(err, response) {
+			//	if (err) throw err;
                
                 if (bu_klasifikasi_nilai == undefined || bu_klasifikasi_nilai == '' || bu_klasifikasi_nilai == null) {
                     bu_klasifikasi_nilai = 0;
@@ -127,7 +127,7 @@ function insertbadanusahaklasifikasi(bu_id, bu_npwp, bu_klasifikasi_sub_bidang_k
                     }
                 });
 				//}
-			});
+			//});
 		} catch(err) {
 			reject(err);
 		}
@@ -141,9 +141,9 @@ function insertbadanusahapengurus(bu_id, bu_npwp, bu_pengurus_nama, bu_pengurus_
 		var db = DBMS();
 		
 		try {
-			var utkdelete = [bu_npwp];
-			db.query("DELETE FROM dt_badan_usaha_pengurus WHERE bu_npwp = $1", utkdelete).callback(function(err, response) {
-				if (err) throw err;
+			//var utkdelete = [bu_npwp];
+			//db.query("DELETE FROM dt_badan_usaha_pengurus WHERE bu_npwp = $1", utkdelete).callback(function(err, response) {
+			//	if (err) throw err;
                
                 var utkinput = [uuidv4(), bu_id, bu_npwp, bu_pengurus_nama, bu_pengurus_tanggal_lahir, bu_pengurus_alamat, 
                     bu_pengurus_ktp, bu_pengurus_jabatan, bu_pengurus_pendidikan];
@@ -158,7 +158,7 @@ function insertbadanusahapengurus(bu_id, bu_npwp, bu_pengurus_nama, bu_pengurus_
                     }
                 });
 				//}
-			});
+			//});
 		} catch(err) {
 			reject(err);
 		}
@@ -197,9 +197,9 @@ function insertbadanusahakeuangan(bu_id, bu_npwp, bu_keuangan_nama, bu_keuangan_
 		var db = DBMS();
 		
 		try {
-			var utkdelete = [bu_npwp];
-			db.query("DELETE FROM dt_badan_usaha_keuangan WHERE bu_npwp = $1", utkdelete).callback(function(err, response) {
-				if (err) throw err;
+			//var utkdelete = [bu_npwp, bu_keuangan_ktp];
+			//db.query("DELETE FROM dt_badan_usaha_keuangan WHERE bu_npwp = $1 AND bu_keuangan_ktp = $2", utkdelete).callback(function(err, response) {
+			//	if (err) throw err;
                
                 if (bu_keuangan_jumlah_saham == undefined || bu_keuangan_jumlah_saham == '' || bu_keuangan_jumlah_saham == null) {
                     bu_keuangan_jumlah_saham = 0;
@@ -226,7 +226,7 @@ function insertbadanusahakeuangan(bu_id, bu_npwp, bu_keuangan_nama, bu_keuangan_
                     }
                 });
 				//}
-			});
+			//});
 		} catch(err) {
 			reject(err);
 		}
