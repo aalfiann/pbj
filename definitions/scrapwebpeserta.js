@@ -29,9 +29,9 @@ async function parseHtml(html, tenderid, linknya, nilaipage) {
             }
         }
     }
-    process.stdout.clearLine();
-    process.stdout.cursorTo(0);
-    process.stdout.write("Tender: " + nilaipage + " --- Peserta: " + buatjson.length + " --- " + linknya);
+    // process.stdout.clearLine();
+    // process.stdout.cursorTo(0);
+    // process.stdout.write("Tender: " + nilaipage + " --- Peserta: " + buatjson.length + " --- " + linknya);
     return buatjson;
 };
 

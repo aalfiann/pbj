@@ -101,7 +101,6 @@ function checkNPWPtidakaktif(npwp) {
             .send('option=npwp')
             .send('status_reg=proses')
             .end(function (res) {
-                console.log(npwp + " --- " + res.body);
                 if (res.error) {
                     reject("");
                 } else {
