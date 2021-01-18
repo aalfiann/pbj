@@ -1,7 +1,7 @@
 const puppeteer = require('puppeteer');
 
 var itemPerPage = CONF.row_ambil;
-var pagepartial = CONF.page_partial;
+//var pagepartial = CONF.page_partial;
 
 function siteUrl(linkdata, token, page = 1, start = 0, itemPerPage = 25) {
     var linkdatanya = linkdata + '?draw='+page+'&columns[0][data]=0&columns[0][name]=&columns[0][searchable]=true&columns[0][orderable]=true&columns[0][search][value]=&columns[0][search][regex]=false&columns[1][data]=1&columns[1][name]=&columns[1][searchable]=true&columns[1][orderable]=true&columns[1][search][value]=&columns[1][search][regex]=false&columns[2][data]=2&columns[2][name]=&columns[2][searchable]=true&columns[2][orderable]=true&columns[2][search][value]=&columns[2][search][regex]=false&columns[3][data]=3&columns[3][name]=&columns[3][searchable]=false&columns[3][orderable]=false&columns[3][search][value]=&columns[3][search][regex]=false&columns[4][data]=4&columns[4][name]=&columns[4][searchable]=true&columns[4][orderable]=true&columns[4][search][value]=&columns[4][search][regex]=false&order[0][column]=0&order[0][dir]=desc&start='+start+'&length='+itemPerPage+'&search[value]=&search[regex]=false&authenticityToken='+token+'&_='+Date.now();
@@ -32,7 +32,7 @@ async function transformJson(page) {
     return JSON.parse(ntemp2[0]);
 };
 
-const getAuthenticityToken = async () => {
+const getAuthenticityToken = async (pagepartial) => {
     var tzoffset = (new Date()).getTimezoneOffset() * 60000;
 	var receivetime = (new Date(Date.now() - tzoffset)).toISOString().replace("T", " ").replace("Z", "");
     const { v4: uuidv4 } = require('uuid');
@@ -403,13 +403,17 @@ function hitungwaktu(judulnya, waktumulai) {
     console.log("Durasi: " + durasimsnya + " ms (" + durasidetiknya + " s)");
 };
 
-const runScrapper = async () => {
-    await getAuthenticityToken();
+// const runScrapper = async () => {
+//     await getAuthenticityToken(pagepartial);
+// };
+
+exports.runScrapper = async function(pagepartial) {
+    await getAuthenticityToken(pagepartial);
 };
 
-module.exports = {
-    runScrapper
-};
+// module.exports = {
+//     runScrapper(pagepartial);
+// };
 
 //DATABASE
 async function dataurlTender(type, req, receivetime) {
