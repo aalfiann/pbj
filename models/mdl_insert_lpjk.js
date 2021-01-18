@@ -10,18 +10,18 @@ exports.insertlpjk = function (dataSBU, statusReg) {
                     var initializePromise = insertbadanusaha(bu_id, dataSBU.sbu[0].trim(), dataSBU.sbu[1].trim(), dataSBU.sbu[2].trim(), 
                     dataSBU.sbu[3].trim(), dataSBU.sbu[4].trim(), dataSBU.sbu[5].trim(), dataSBU.sbu[6].trim(), dataSBU.sbu[7].trim(), dataSBU.sbu[8].trim(), dataSBU.sbu[9].trim(), dataSBU.sbu[10].trim(), statusReg); 
                     initializePromise.then(function() {
-                        async.each(dataSBU.kualifikasi_dan_klasifikasi, function(isinya, callback) {
-                            var initializePromise1 = insertbadanusahaklasifikasi(bu_id, dataSBU.sbu[8].trim(), isinya.sub_bidang_klasifikasi.trim(), isinya.no_kode.trim(), isinya.kualifikasi.trim(), 
-                            isinya.tahun.trim(), isinya.nilai.trim(), isinya.asosiasi.trim(), isinya.tgl_permohonan.trim(), isinya.tgl_cetak_pertama.trim(), isinya.tgl_cetak_perubahan_terakhir.trim(), isinya.tgl_reg_thn_2r.trim()); 
-                            initializePromise1.then(function() {
+                        var initializePromisehapus = hapusdatabu(dataSBU.sbu[8].trim()); 
+                        initializePromisehapus.then(function() {
+                            async.each(dataSBU.kualifikasi_dan_klasifikasi, function(isinya, callback) {
+                                var initializePromise1 = insertbadanusahaklasifikasi(bu_id, dataSBU.sbu[8].trim(), isinya.sub_bidang_klasifikasi.trim(), isinya.no_kode.trim(), isinya.kualifikasi.trim(), 
+                                isinya.tahun.trim(), isinya.nilai.trim(), isinya.asosiasi.trim(), isinya.tgl_permohonan.trim(), isinya.tgl_cetak_pertama.trim(), isinya.tgl_cetak_perubahan_terakhir.trim(), isinya.tgl_reg_thn_2r.trim()); 
+                                initializePromise1.then(function() {
+                                }, function(err) {
+                                    console.log(err)
+                                });
                             }, function(err) {
                                 console.log(err)
                             });
-                        }, function(err) {
-                            console.log(err)
-                        });
-                        var initializePromisehapus = hapusdatabu(dataSBU.sbu[8].trim()); 
-                        initializePromisehapus.then(function() {
                             async.each(dataSBU.pengurus, function(isinya, callback) {
                                 var initializePromise2 = insertbadanusahapengurus(bu_id, dataSBU.sbu[8].trim(), isinya.nama.trim(), isinya.tgl_lahir.trim(), isinya.alamat.trim(), 
                                 isinya.no_ktp.trim(), isinya.jabatan.trim(), isinya.pendidikan.trim()); 

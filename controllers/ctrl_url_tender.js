@@ -13,6 +13,7 @@ exports.install = function() {
     ROUTE('/scrapwebpeserta', scrapwebpeserta);
 
     ROUTE('/scrapwebtender', scrapwebtender);
+    ROUTE('/scrapwebtender/{jumlahpage}', scrapwebtenderjumlahpage);
 };
 
 function urltender() {
@@ -44,6 +45,11 @@ function scraplpjk() {
 function scrapwebtender() {
     var scrapwebnya = require('../definitions/scrapwebtender');
 	scrapwebnya.runScrapper();
+};
+
+function scrapwebtenderjumlahpage(jumlahpage) {
+    var scrapwebnya = require('../definitions/scrapwebtenderjumlahpage');
+	scrapwebnya.runScrapper(jumlahpage);
 };
 
 function scrapweb() {
