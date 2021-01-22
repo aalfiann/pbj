@@ -17,40 +17,40 @@ exports.insertlpjk = function (dataSBU, statusReg) {
                                 isinya.tahun.trim(), isinya.nilai.trim(), isinya.asosiasi.trim(), isinya.tgl_permohonan.trim(), isinya.tgl_cetak_pertama.trim(), isinya.tgl_cetak_perubahan_terakhir.trim(), isinya.tgl_reg_thn_2r.trim()); 
                                 initializePromise1.then(function() {
                                 }, function(err) {
-                                    console.log(err)
+                                    console.log(err);
                                 });
                             }, function(err) {
-                                console.log(err)
+                                console.log("insertbadanusahaklasifikasi: " + err);
                             });
                             async.each(dataSBU.pengurus, function(isinya, callback) {
                                 var initializePromise2 = insertbadanusahapengurus(bu_id, dataSBU.sbu[8].trim(), isinya.nama.trim(), isinya.tgl_lahir.trim(), isinya.alamat.trim(), 
                                 isinya.no_ktp.trim(), isinya.jabatan.trim(), isinya.pendidikan.trim()); 
                                 initializePromise2.then(function() {
                                 }, function(err) {
-                                    console.log(err)
+                                    console.log(err);
                                 });
                             }, function(err) {
-                                console.log(err)
+                                console.log("insertbadanusahapengurus: " + err);
                             });
                             async.each(dataSBU.tenaga_kerja, function(isinya, callback) {
                                 var initializePromise3 = insertbadanusahatenagakerja(bu_id, dataSBU.sbu[8].trim(), isinya.nama.trim(), isinya.tgl_lahir.trim(), isinya.ktp.trim(), 
                                 isinya.pendidikan.trim(), isinya.no_registrasi.trim(), isinya.jenis_sertifikat.trim(), isinya.detail.trim()); 
                                 initializePromise3.then(function() {
                                 }, function(err) {
-                                    console.log(err)
+                                    console.log(err);
                                 });
                             }, function(err) {
-                                console.log(err)
+                                console.log("insertbadanusahatenagakerja: " + err);
                             });
                             async.each(dataSBU.keuangan, function(isinya, callback) {
                                 var initializePromise4 = insertbadanusahakeuangan(bu_id, dataSBU.sbu[8].trim(), isinya.nama.trim(), isinya.ktp_npwp.trim(), isinya.alamat.trim(), 
                                 isinya.jumlah_saham.trim(), isinya.nilai_satuan_saham.trim(), isinya.modal_dasar.trim(), isinya.modal_setor.trim()); 
                                 initializePromise4.then(function() {
                                 }, function(err) {
-                                    console.log(err)
+                                    console.log(err);
                                 });
                             }, function(err) {
-                                console.log(err)
+                                console.log("insertbadanusahakeuangan: " + err);
                             });
                             console.log("SUKSES: " + dataSBU.sbu[0].trim() + " --- " + dataSBU.sbu[8].trim() + " --- " + statusReg);
                             resolve(); 
