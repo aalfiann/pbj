@@ -113,7 +113,7 @@ function OpenListTender(katakunci, sortby, sortbyasc, filterby, filter, page, li
                         }
                     }
                 } else {
-                    reject("Filter by tidak bisa lebih besar dari Filter.");
+                    reject("Filter by tidak bisa lebih besar dari Filter..");
                 }
             }
             

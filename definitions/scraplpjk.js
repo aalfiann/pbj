@@ -4,7 +4,7 @@ const DomParser = require('dom-parser');
 //DATABASE
 async function asyncstartGetData(req, receivetime) {
 	var data = await startGetData(req, receivetime).catch(err => {
-        console.log(err);
+        console.log("getlpjk: " + err);
     });
 	return data;
 };
@@ -15,7 +15,7 @@ function startGetData(req, receivetime) {
         var helpernya = require('../definitions/helper');
 
         try {
-            db.query("SELECT dt_tender_peserta.npwp FROM dt_tender_peserta GROUP BY dt_tender_peserta.npwp ORDER BY dt_tender_peserta.npwp").callback((err, response) => {
+            db.query("SELECT dt_tender_peserta.npwp, dt_tender_peserta.nama_peserta FROM dt_tender_peserta GROUP BY dt_tender_peserta.npwp, dt_tender_peserta.nama_peserta ORDER BY dt_tender_peserta.npwp").callback((err, response) => {
                 if (err) throw err;
 
                 if (response.length > 0) {
@@ -32,7 +32,7 @@ function startGetData(req, receivetime) {
 
 async function asyncinsertlpjk(dataSBU, statusReg) {
 	var data = await insertlpjk(dataSBU, statusReg).catch(err => {
-        console.log(err);
+        console.log("insertlpjk: " + err);
       });
 	return data;
 };
@@ -57,14 +57,14 @@ function insertlpjk(dataSBU, statusReg) {
 //OKELAH
 async function asynccheckNPWPaktif(npwp) {
     var data = await checkNPWPaktif(npwp).catch(err => {
-        console.log(err);
+        console.log("npwp: " + err);
     });
 	return data;
 };
 
 async function asynccheckNPWPtidakaktif(npwp) {
     var data = await checkNPWPtidakaktif(npwp).catch(err => {
-        console.log(err);
+        console.log("npwp: " + err);
     });
 	return data;
 };
@@ -81,7 +81,7 @@ function checkNPWPaktif(npwp) {
             .send('status_reg=aktif')
             .end(function (res) {
                 if (res.error) {
-                    reject("");
+                    reject(res.error);
                 } else {
                     var data = JSON.parse(res.body);
                     resolve(data.record);
@@ -102,7 +102,63 @@ function checkNPWPtidakaktif(npwp) {
             .send('status_reg=proses')
             .end(function (res) {
                 if (res.error) {
-                    reject("");
+                    reject(res.error);
+                } else {
+                    var data = JSON.parse(res.body);
+                    resolve(data.record);
+                }
+            });
+    });
+}
+
+async function asynccheckPerusahaanaktif(namaperusahaan) {
+    var data = await checkPerusahaanaktif(namaperusahaan).catch(err => {
+        console.log("nama: " + err);
+    });
+	return data;
+};
+
+async function asynccheckPerusahaantidakaktif(namaperusahaan) {
+    var data = await checkPerusahaantidakaktif(namaperusahaan).catch(err => {
+        console.log("nama: " + err);
+    });
+	return data;
+};
+
+function checkPerusahaanaktif(namaperusahaan) {
+    return new Promise((resolve, reject) => {
+        var unirest = require('unirest');
+        unirest('POST', 'https://search.lpjk.net/search_badan_usaha/searching_bu')
+            .headers({
+                'Content-Type': 'application/x-www-form-urlencoded',
+            })
+            .send('racord=' + namaperusahaan)
+            .send('option=nama')
+            .send('status_reg=aktif')
+            .end(function (res) {
+                if (res.error) {
+                    reject(res.error);
+                } else {
+                    var data = JSON.parse(res.body);
+                    resolve(data.record);
+                }
+            });
+    });
+}
+
+function checkPerusahaantidakaktif(namaperusahaan) {
+    return new Promise((resolve, reject) => {
+        var unirest = require('unirest');
+        unirest('POST', 'https://search.lpjk.net/search_badan_usaha/searching_bu')
+            .headers({
+                'Content-Type': 'application/x-www-form-urlencoded',
+            })
+            .send('racord=' + namaperusahaan)
+            .send('option=nama')
+            .send('status_reg=proses')
+            .end(function (res) {
+                if (res.error) {
+                    reject(res.error);
                 } else {
                     var data = JSON.parse(res.body);
                     resolve(data.record);
@@ -136,8 +192,28 @@ const ambilDetailSBU = async () => {
                 } else {
                     recnya = await asynccheckNPWPtidakaktif(obj.data[jjj].npwp);
                     html = "";
-                    //console.log(statusreg);
-                    //console.log(recnya);
+                    if (recnya != undefined && recnya != null && recnya != '' && recnya.length > 0) {
+                        await page.goto(recnya[0].link, { waitUntil: 'networkidle0' });
+                        html = await page.content();
+                        if (html.length > 250) {
+                            parseHtml(html, statusreg);
+                        }
+                    }
+                }
+                var recnya = await asynccheckPerusahaanaktif(obj.data[jjj].nama_peserta);
+                var html = "";
+                var statusreg = "Proses";
+                if (recnya != undefined && recnya != null && recnya != '' && recnya.length > 0) {
+                    await page.goto(recnya[0].link, { waitUntil: 'networkidle0' });
+                    html = await page.content();
+                    statusreg = "Aktif.";
+                    if (html.length > 250) {
+                        parseHtml(html, statusreg);
+                    }
+                } else {
+                    recnya = await asynccheckPerusahaantidakaktif(obj.data[jjj].nama_peserta);
+                    html = "";
+                    statusreg = "Proses.";
                     if (recnya != undefined && recnya != null && recnya != '' && recnya.length > 0) {
                         await page.goto(recnya[0].link, { waitUntil: 'networkidle0' });
                         html = await page.content();
@@ -147,7 +223,7 @@ const ambilDetailSBU = async () => {
                     }
                 }
             } catch (err) {
-                console.log(err);
+                console.log("errlpjk: " + err);
             }
         }
     }
@@ -211,7 +287,6 @@ async function parseKualifikasiDanKlasifikasi(strData) {
             index = 3;
         }
     });
-    //console.log(data);
     return data;
 };
 
@@ -223,7 +298,6 @@ async function parseTenagaKerja(tenagaKerja) {
     var data = [];
     var dataPool = {}
     Array.from(tds).map((t) => {
-        //console.log(index + ":" + t.innerHTML);
         if (index > 9) {
             if (index == 10) dataPool.nama = t.innerHTML;
             if (index == 11) dataPool.tgl_lahir = t.innerHTML;
@@ -248,20 +322,17 @@ async function parseTenagaKerja(tenagaKerja) {
             index = 9;
         }
     });
-    //console.log(data);
     return data;
 };
 
 async function parseKeuangan(keuangan) {
     var dom = new DomParser().parseFromString(keuangan);
     var tables = dom.getElementsByTagName('table');
-    // console.log(tables[3].innerHTML);
     var tds = new DomParser().parseFromString(tables[3].innerHTML).getElementsByTagName('td');
     var index = 1;
     var data = [];
     var dataPool = {}
     Array.from(tds).map((t) => {
-        //console.log(index + ":" + t.innerHTML);
         if (index > 2) {
             if (index == 3) dataPool.nama = t.innerHTML;
             if (index == 4) dataPool.ktp_npwp = t.innerHTML;
@@ -279,7 +350,6 @@ async function parseKeuangan(keuangan) {
             index = 2;
         }
     });
-    //console.log(data);
     return data;
 };
 
@@ -292,7 +362,6 @@ async function parsePengurus(pengurus) {
     var data = [];
     var dataPool = {}
     Array.from(tds).map((t) => {
-        //console.log(index + ":" + t.innerHTML);
         if (index > 1) {
             if (index == 2) dataPool.nama = t.innerHTML;
             if (index == 3) dataPool.tgl_lahir = t.innerHTML;
