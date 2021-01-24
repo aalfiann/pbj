@@ -200,9 +200,10 @@ const ambilDetailSBU = async () => {
                         }
                     }
                 }
-                var recnya = await asynccheckPerusahaanaktif(obj.data[jjj].nama_peserta);
+                var namapeserta = obj.data[jjj].nama_peserta.toString().trim();
+                var recnya = await asynccheckPerusahaanaktif(namapeserta);
                 var html = "";
-                var statusreg = "Proses";
+                var statusreg = "Proses.";
                 if (recnya != undefined && recnya != null && recnya != '' && recnya.length > 0) {
                     await page.goto(recnya[0].link, { waitUntil: 'networkidle0' });
                     html = await page.content();
@@ -211,7 +212,7 @@ const ambilDetailSBU = async () => {
                         parseHtml(html, statusreg);
                     }
                 } else {
-                    recnya = await asynccheckPerusahaantidakaktif(obj.data[jjj].nama_peserta);
+                    recnya = await asynccheckPerusahaantidakaktif(namapeserta);
                     html = "";
                     statusreg = "Proses.";
                     if (recnya != undefined && recnya != null && recnya != '' && recnya.length > 0) {
@@ -219,6 +220,30 @@ const ambilDetailSBU = async () => {
                         html = await page.content();
                         if (html.length > 250) {
                             parseHtml(html, statusreg);
+                        }
+                    } else {
+                        var namapeserta = obj.data[jjj].nama_peserta.toString().replace('PT.','').replace('CV.','').replace('PT ','').replace('CV ','').trim();
+                        var recnya = await asynccheckPerusahaanaktif(namapeserta);
+                        var html = "";
+                        var statusreg = "Proses..";
+                        if (recnya != undefined && recnya != null && recnya != '' && recnya.length > 0) {
+                            await page.goto(recnya[0].link, { waitUntil: 'networkidle0' });
+                            html = await page.content();
+                            statusreg = "Aktif..";
+                            if (html.length > 250) {
+                                parseHtml(html, statusreg);
+                            }
+                        } else {
+                            recnya = await asynccheckPerusahaantidakaktif(namapeserta);
+                            html = "";
+                            statusreg = "Proses..";
+                            if (recnya != undefined && recnya != null && recnya != '' && recnya.length > 0) {
+                                await page.goto(recnya[0].link, { waitUntil: 'networkidle0' });
+                                html = await page.content();
+                                if (html.length > 250) {
+                                    parseHtml(html, statusreg);
+                                }
+                            }
                         }
                     }
                 }

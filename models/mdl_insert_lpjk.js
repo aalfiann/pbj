@@ -1,4 +1,4 @@
-exports.insertlpjk = function (dataSBU, statusReg) {
+exports.insertlpjk = function (dataSBU, statusRegi) {
 	return new Promise(function(resolve, reject) {
         var db = DBMS();
         var async = require('async');
@@ -7,6 +7,7 @@ exports.insertlpjk = function (dataSBU, statusReg) {
             if (dataSBU.sbu != undefined) {
                 if (dataSBU.sbu.length > 0) {
                     var bu_id = uuidv4();
+                    var statusReg = statusRegi.toString().replace(/\./g,'');
                     var initializePromise = insertbadanusaha(bu_id, dataSBU.sbu[0].trim(), dataSBU.sbu[1].trim(), dataSBU.sbu[2].trim(), 
                     dataSBU.sbu[3].trim(), dataSBU.sbu[4].trim(), dataSBU.sbu[5].trim(), dataSBU.sbu[6].trim(), dataSBU.sbu[7].trim(), dataSBU.sbu[8].trim(), dataSBU.sbu[9].trim(), dataSBU.sbu[10].trim(), statusReg); 
                     initializePromise.then(function() {
