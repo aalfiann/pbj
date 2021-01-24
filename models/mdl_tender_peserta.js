@@ -67,9 +67,9 @@ function OpenPerusahaan(katakunci, sortby, sortbyasc, filterby, filter, page, li
                             sambungwhere = sambungwhere + "AND (LOWER(REPLACE(REPLACE(dt_tender_peserta.npwp,'.',''),'-','')) like $" + nilaiparam + ") ";
                             utkinput.push('%'+ filter[i].toLowerCase().replace(/\./g,'').replace(/-/g,'') + '%');
                         } else if (filterby[i] == 9) {
-                            sambungwhere = sambungwhere + "AND (LOWER(dt_badan_usaha.bu_status_registrasi) = 'aktif') ";
+                            sambungwhere = sambungwhere + "AND ((LOWER(dt_badan_usaha.bu_status_registrasi) = 'aktif') OR (LOWER(dt_badan_usaha.bu_status_registrasi) = 'aktif.'))";
                         } else if (filterby[i] == 10) {
-                            sambungwhere = sambungwhere + "AND (LOWER(dt_badan_usaha.bu_status_registrasi) = 'proses') ";
+                            sambungwhere = sambungwhere + "AND ((LOWER(dt_badan_usaha.bu_status_registrasi) = 'proses') OR (LOWER(dt_badan_usaha.bu_status_registrasi) = 'proses.'))";
                         } else if (filterby[i] == 11) {
                             sambungwhere = sambungwhere + "AND (dt_badan_usaha.bu_status_registrasi is NULL)";
                         }
