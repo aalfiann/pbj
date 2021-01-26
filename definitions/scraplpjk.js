@@ -222,7 +222,7 @@ const ambilDetailSBU = async () => {
                             parseHtml(html, statusreg);
                         }
                     } else {
-                        var namapeserta = obj.data[jjj].nama_peserta.toString().replace('PT.','').replace('CV.','').replace('PT ','').replace('CV ','').trim();
+                        var namapeserta = obj.data[jjj].nama_peserta.toString().replace('PT.','').replace('CV.','').replace('PT ','').replace('CV ','').replace(', CV','').replace(', PT','').replace(',CV','').replace(',PT','').trim();
                         var recnya = await asynccheckPerusahaanaktif(namapeserta);
                         var html = "";
                         var statusreg = "Proses..";
